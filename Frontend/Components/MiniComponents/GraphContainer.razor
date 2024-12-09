@@ -1,0 +1,54 @@
+﻿<section id="graph-container" class="child">
+    <div class="dropdown-inputs">
+        <a href="#">
+            <span>Customise</span>
+            <i class="fa fa-chevron-down"></i>
+        </a>
+
+        <div class="inputs">
+            <div class="input-row">
+                <label for="ticker">Ticker:</label>
+                <input type="text" id="ticker" placeholder="Ticker" />
+            </div>
+
+            <div class="input-row">
+                <label for="multiplier">Multiplier:</label>
+                <input type="number" id="multiplier" placeholder="Multiplier" />
+            </div>
+
+            <div class="input-row">
+                <label for="timespan">Timespan:</label>
+                <input type="text" id="timespan" placeholder="Timespan" />
+            </div>
+
+            <div class="input-row">
+                <label for="dateFrom">Date From:</label>
+                <input type="date" id="dateFrom" />
+            </div>
+
+            <div class="input-row">
+                <label for="dateTo">Date To:</label>
+                <input type="date" id="dateTo" />
+            </div>
+
+            <button @onclick="LoadData">Load Data</button>
+        </div>
+
+
+    </div>
+
+    <Graph />
+
+</section>
+
+@code {
+    private string? ticker;
+    private int? multiplier;
+    private string? timespan;
+    private DateTime? dateFrom;
+    private DateTime? dateTo;
+
+    private void LoadData() {
+        
+    }
+}

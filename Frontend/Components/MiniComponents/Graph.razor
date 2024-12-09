@@ -1,0 +1,19 @@
+﻿@using Frontend.Models.PolygonData
+@inject IJSRuntime JSRuntime
+<!--USE D3.js-->
+
+
+<section id="graph">
+
+</section>
+
+@code {
+
+    public PolygonDataLoader? dataLoader { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if ((firstRender) && (dataLoader != null)) {
+            await JSRuntime.InvokeVoidAsync("", dataLoader);
+        }
+    }
+}

@@ -1,0 +1,60 @@
+﻿<section id="topBar">
+    <div class="small-container">
+        <div class="instrumentList">
+            <!--@foreach(Instrument instrument in instruments) {
+                <ul>@instrument.InstrumentName (@instrument.InstrumentSymbol)</ul>
+            }-->
+            <!--Temp Code
+
+                I can create a Razor component for this dropdown menu
+
+                Maybe add a pop up notification for the instruments which i have not got data for
+            -->
+
+            <div id="dropdown-menu">
+                <div class="select-btn">
+                    <span class="selectBtn-text">Instruments</span>
+                    <!--<i class="fa-solid fa-chevron-down"></i>-->
+                </div>
+
+                <ul class="options">
+                    <li class="option">
+                        <span class="option-text">Indices</span>
+                    </li>
+
+                    <li class="option">
+                        <span class="option-text">FX</span>
+                    </li>
+
+                    <li class="option">
+                        <span class="option-text">Cryptocurrency</span>
+                    </li>
+
+                    <li class="option">
+                        <span class="option-text">Stocks</span>
+                    </li>
+
+                    <li class="option">
+                        <span class="option-text">Commodities</span>
+                    </li>
+
+                    <li class="option">
+                        <span class="option-text">Bonds and Rates</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="small-container">
+        <div class="help">
+            <p>Help</p>
+        </div>
+    </div>
+</section>
+
+@code {
+
+}
