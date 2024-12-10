@@ -164,8 +164,8 @@ html, body {
         background: #dbdbdb;
     }
 
-.option i {
-    font-size: 13px;
+.e-chevron-down {
+    content: '\e729';
 }
 
 .option .option-text {
