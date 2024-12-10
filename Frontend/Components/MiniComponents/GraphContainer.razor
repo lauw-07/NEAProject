@@ -1,4 +1,6 @@
-﻿<section id="graph-container" class="child">
+﻿@inject Models.PolygonData.PolygonDataLoader polygonDataLoader;
+
+<section id="graph-container" class="child">
     <div class="dropdown-inputs">
         <a href="#">
             <span>Customise</span>
@@ -8,27 +10,27 @@
         <div class="inputs">
             <div class="input-row">
                 <label for="ticker">Ticker:</label>
-                <input type="text" id="ticker" placeholder="Ticker" />
+                <input type="text" id="ticker" placeholder="Ticker" required />
             </div>
 
             <div class="input-row">
                 <label for="multiplier">Multiplier:</label>
-                <input type="number" id="multiplier" placeholder="Multiplier" />
+                <input type="number" id="multiplier" placeholder="Multiplier" required />
             </div>
 
             <div class="input-row">
                 <label for="timespan">Timespan:</label>
-                <input type="text" id="timespan" placeholder="Timespan" />
+                <input type="text" id="timespan" placeholder="Timespan" required />
             </div>
 
             <div class="input-row">
                 <label for="dateFrom">Date From:</label>
-                <input type="date" id="dateFrom" />
+                <input type="date" id="dateFrom" required />
             </div>
 
             <div class="input-row">
                 <label for="dateTo">Date To:</label>
-                <input type="date" id="dateTo" />
+                <input type="date" id="dateTo" required />
             </div>
 
             <button @onclick="LoadData">Load Data</button>
@@ -37,18 +39,14 @@
 
     </div>
 
-    <Graph />
+    <!--Maybe add paramters into the graph component depending on what the user wants
+        This would also mean that a parameter needs to be passed in from inputs made in the topbar component as well as the sidebar component
+    -->
+
+    <Graph TSLists="@TSLists"/>
 
 </section>
 
 @code {
-    private string? ticker;
-    private int? multiplier;
-    private string? timespan;
-    private DateTime? dateFrom;
-    private DateTime? dateTo;
-
-    private void LoadData() {
-        
-    }
+    
 }

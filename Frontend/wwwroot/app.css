@@ -133,7 +133,7 @@ html, body {
     color: black;
 }
 
-#dropdown-menu.active .select-btn i {
+#dropdown-menu.active .select-btn .e-chevron-down {
     transform: rotate(-180deg);
 }
 
@@ -163,10 +163,6 @@ html, body {
     .options .option:hover {
         background: #dbdbdb;
     }
-
-.e-chevron-down {
-    content: '\e729';
-}
 
 .option .option-text {
     font-size: 13px;

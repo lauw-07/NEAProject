@@ -1,4 +1,6 @@
 using Frontend.Components;
+using Frontend.Models.Database;
+using Frontend.Models.PolygonData;
 
 namespace Frontend {
     public class Program {
@@ -9,6 +11,11 @@ namespace Frontend {
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+
+            builder.Services.AddScoped(sp => new PolygonDataLoader(builder.Configuration["BaseUrl"] ?? string.Empty, builder.Configuration["ApiKey"] ?? string.Empty));
+
+            string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+            builder.Services.AddScoped(sp => new DatabaseHandler(connectionString));
 
             var app = builder.Build();
 

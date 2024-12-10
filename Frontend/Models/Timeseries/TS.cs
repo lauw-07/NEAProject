@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Timeseries {
+namespace Frontend.Models.Timeseries {
     public class TS {
         //Time series class
         protected List<long> _timestamps = new List<long>();
