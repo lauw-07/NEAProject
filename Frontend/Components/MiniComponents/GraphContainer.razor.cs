@@ -1,5 +1,6 @@
 ﻿using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
+using Frontend.Models.Database;
 
 namespace Frontend.Components.MiniComponents {
     public partial class GraphContainer {
@@ -10,7 +11,15 @@ namespace Frontend.Components.MiniComponents {
         private DateTime dateTo { get; set; }
 
         private PolygonStockPriceData? polygonStockPriceData;
+        private string symbol = string.Empty;
+        private List<Result>? results;
         private List<TS>? TSLists;
+
+        private async Task FetchData() {
+            await LoadData();
+            await SaveToDatabase();
+            await ReadFromDatabase();
+        }
 
         private async Task LoadData() {
             if (string.IsNullOrEmpty(ticker) || string.IsNullOrEmpty(timespan)) {
@@ -18,8 +27,41 @@ namespace Frontend.Components.MiniComponents {
             }
 
             polygonDataLoader.SetParameters(ticker, multiplier, timespan, dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
-
+            
             polygonStockPriceData = await polygonDataLoader.LoadPolygonStockDataAsync();
+
+            symbol = polygonStockPriceData.Ticker;
+            results = polygonStockPriceData.Results;
+        }
+
+        private async Task SaveToDatabase() {
+            if (results == null || results.Count == 0) {
+                return;
+            }
+            foreach (Result result in results) {
+                DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(result.Timestamp);
+                string pxDate = offset.Date.ToShortDateString();
+                double openPx = result.Open;
+                double closePx = result.Close;
+                double highPx = result.High;
+                double lowPx = result.Low;
+                double volume = result.Volume;
+
+                try {
+                    await databaseHandler.AddPriceDataAsync(symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
+                } catch (Exception ex) {
+                    Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
+                }
+            }
+        }
+
+
+        private async Task<TS[]> ReadFromDatabase() {
+            List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
+
+            foreach (PriceData priceDataObj in priceData) {
+                
+            }
         }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
@@ -30,7 +72,7 @@ namespace Frontend.Components.MiniComponents {
          */
 
 
-        private void ConvertToTS() {
+        private TS ConvertToTS() {
             //TS openingPxTS = new TS() 
         }
     }

@@ -6,7 +6,7 @@ using Microsoft.JSInterop;
 namespace Frontend.Components.MiniComponents {
     public partial class Graph {
         [Parameter]
-        public List<TS>? TSLists { get; set; }
+        public List<TS> TSLists { get; set; }
 
         // Pass timeseries into the graphing.js file
     }
