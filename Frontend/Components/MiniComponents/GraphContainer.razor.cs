@@ -18,7 +18,7 @@ namespace Frontend.Components.MiniComponents {
         private async Task FetchData() {
             await LoadData();
             await SaveToDatabase();
-            await ReadFromDatabase();
+            TSLists = await ReadFromDatabase();
         }
 
         private async Task LoadData() {
@@ -56,7 +56,7 @@ namespace Frontend.Components.MiniComponents {
         }
 
 
-        private async Task<TS[]> ReadFromDatabase() {
+        private async Task<List<TS>> ReadFromDatabase() {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
             int initialCapacity = priceData.Count;
 
@@ -67,14 +67,16 @@ namespace Frontend.Components.MiniComponents {
              * Each price data object contains single prices related to a single timestamp
              */
             
-
             foreach (PriceData priceDataObj in priceData) {
                 double openPx = priceDataObj.OpenPx;
                 double closePx = priceDataObj.ClosePx;
                 DateTime pxDate = priceDataObj.PxDate;
 
-                
+                openPxTimeseries.Add(pxDate, openPx);
+                closePxTimeseries.Add(pxDate, closePx);
             }
+
+            return new List<TS> { openPxTimeseries, closePxTimeseries };
         }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
@@ -83,10 +85,5 @@ namespace Frontend.Components.MiniComponents {
          * Create two timeseries for opening and closing price
          * Store this in the data variable and pass this through as a parameter to the graph component
          */
-
-
-        private TS ConvertToTS() {
-            //TS openingPxTS = new TS() 
-        }
     }
 }

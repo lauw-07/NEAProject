@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Frontend.Models.Timeseries {
     public class TS {
         //Time series class
-        protected List<long> _timestamps = new List<long>();
+        protected List<DateTime> _timestamps = new List<DateTime>();
         protected List<double> _values = new List<double>();
 
         //Constructor Overloading
@@ -28,7 +28,7 @@ namespace Frontend.Models.Timeseries {
             _values.AddRange(other._values);
         }
 
-        public TS(long[] timestamps, double[] values) {
+        public TS(DateTime[] timestamps, double[] values) {
             if (timestamps.Length != values.Length)
                 return;
 
@@ -36,17 +36,17 @@ namespace Frontend.Models.Timeseries {
             _values.AddRange(values);
         }
 
-        public TS(List<long> timestamps, List<double> values) {
+        public TS(List<DateTime> timestamps, List<double> values) {
             _timestamps = timestamps;
             _values = values;
         }
 
-        public void Add(long timestamp, double value) {
+        public void Add(DateTime timestamp, double value) {
             _timestamps.Add(timestamp);
             _values.Add(value);
         }
 
-        public void Add(long[] timestamps, double[] values) {
+        public void Add(DateTime[] timestamps, double[] values) {
             if (timestamps == null || values == null || timestamps.Length != values.Length) return;
             _timestamps.AddRange(timestamps);
             _values.AddRange(values);
@@ -58,9 +58,9 @@ namespace Frontend.Models.Timeseries {
             Add(other.GetTimestamps(), other.GetValues());
         }
 
-        public long[] GetTimestamps() { return _timestamps.ToArray(); }
+        public DateTime[] GetTimestamps() { return _timestamps.ToArray(); }
 
-        public long GetTimestamp(int index) { return _timestamps[index]; }
+        public DateTime GetTimestamp(int index) { return _timestamps[index]; }
 
         public double[] GetValues() { return _values.ToArray(); }
 
