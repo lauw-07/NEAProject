@@ -10,13 +10,27 @@
 
     function drawGraph() {
         const { width, height } = getDimensions();
-        d3.select("#graph").selectAll("*").remove();
+
+        d3.select("#graph").selectAll("*").remove(); //To create new instances of the svg component so that it can be updated with new dimensions
 
         const x = d3.scaleTime()
+            .domain(d3.extent(tempDataset, data => data.timestamp))
             .range([0, width]);
 
+        const xAxisCall = d3.axisBottom(x)
+            .ticks(d3.timeMonth.every(1))
+            .tickFormat(d3.timeFormat("%b %Y"));
+        svg.append("g")
+            .attr("transform", `translate(0, ${height})`)
+            .call(xAxisCall);
+
         const y = d3.scaleLinear()
+            .domain([0, d3.max(tempDataset, data => data.value)])
             .range([height, 0]);
+
+        const yAxisCall = d3.axisLeft(y);
+        svg.append("g")
+            .call(yAxisCall);
 
         const svg = d3.select("#graph")
             .append("svg")
@@ -45,24 +59,27 @@
             { timestamp: new Date("2022-12-01"), value: 320 }
         ];
 
-        x.domain(d3.extent(tempDataset, data => data.timestamp));
-        y.domain([0, d3.max(tempDataset, data => data.value)]);
+        /*
+        Code to use real-life data, implement once figured out how to store the data
+        
+        const dataset = timeseriesData.map(dataPair => ({
+            timestamp: d3.timeParse("%Y-%m-%d")(dataPair.timestamp),
+            value: dataPair.value
+        }));
 
-        const xAxisCall = d3.axisBottom(x)
-            .ticks(d3.timeMonth.every(1))
-            .tickFormat(d3.timeFormat("%b %Y"));
-
-        svg.append("g")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxisCall);
-
-        const yAxisCall = d3.axisLeft(y);
-
-        svg.append("g")
-            .call(yAxisCall);
+        */
+        
+        svg.append("path")
+            .datum(tempDataset)
+            .attr("fill", none)
+            .attr("stroke", "steelblue")
+            .attr("stroke-width", 1.5)
+            .attr("d", d3.line()
+                .x(d => x(d.timestamp))
+                .y(d => y(d.value)))
     }
 
-
+    
     drawGraph();
 
     window.addEventListener("resize", drawGraph);

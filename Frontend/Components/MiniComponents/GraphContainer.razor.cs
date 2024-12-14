@@ -58,8 +58,21 @@ namespace Frontend.Components.MiniComponents {
 
         private async Task<TS[]> ReadFromDatabase() {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
+            int initialCapacity = priceData.Count;
+
+            TS openPxTimeseries = new TS(initialCapacity);
+            TS closePxTimeseries = new TS(initialCapacity);
+
+            /*
+             * Each price data object contains single prices related to a single timestamp
+             */
+            
 
             foreach (PriceData priceDataObj in priceData) {
+                double openPx = priceDataObj.OpenPx;
+                double closePx = priceDataObj.ClosePx;
+                DateTime pxDate = priceDataObj.PxDate;
+
                 
             }
         }
