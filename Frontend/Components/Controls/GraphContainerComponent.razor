@@ -1,6 +1,7 @@
 ﻿@inject Models.PolygonData.PolygonDataLoader polygonDataLoader;
 @inject Models.Database.DatabaseHandler databaseHandler;
 
+
 <section id="graph-container" class="child">
     <div class="dropdown-inputs">
         <a href="#">
@@ -44,10 +45,10 @@
         This would also mean that a parameter needs to be passed in from inputs made in the topbar component as well as the sidebar component
     -->
 
-    <Graph TSLists="@TSLists" />
+    <GraphComponent TSLists="@TSLists" />
 
 </section>
 
 @code {
-    
+
 }

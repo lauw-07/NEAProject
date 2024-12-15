@@ -1,19 +1,32 @@
-﻿using Frontend.Models.PolygonData;
+﻿using Frontend.Models.Database;
+using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
-using Frontend.Models.Database;
 
-namespace Frontend.Components.MiniComponents {
-    public partial class GraphContainer {
-        private string? ticker { get; set; }
-        private int multiplier { get; set; }
-        private string? timespan { get; set; }
-        private DateTime dateFrom { get; set; }
-        private DateTime dateTo { get; set; }
+namespace Frontend.Components.Controls {
+    public partial class GraphContainerComponent {
+        private string? Ticker { get; set; }
+        private int Multiplier { get; set; }
+        private string? Timespan { get; set; }
+        private DateTime DateFrom { get; set; }
+        private DateTime DateTo { get; set; }
 
         private PolygonStockPriceData? polygonStockPriceData;
         private string symbol = string.Empty;
         private List<Result>? results;
         private List<TS>? TSLists;
+
+
+
+        protected override async Task OnAfterRenderAsync(bool firstRender) {
+            Console.WriteLine("OnAfterRenderAsync triggered");
+
+            if (firstRender) {
+                Console.WriteLine("Fetching intial data from database");
+                symbol = await databaseHandler.GetInstrumentByIDAsync(1);
+
+                TSLists = await ReadFromDatabase();
+            }
+        }
 
         private async Task FetchData() {
             await LoadData();
@@ -22,12 +35,12 @@ namespace Frontend.Components.MiniComponents {
         }
 
         private async Task LoadData() {
-            if (string.IsNullOrEmpty(ticker) || string.IsNullOrEmpty(timespan)) {
+            if (string.IsNullOrEmpty(Ticker) || string.IsNullOrEmpty(Timespan)) {
                 return;
             }
 
-            polygonDataLoader.SetParameters(ticker, multiplier, timespan, dateFrom.ToString("yyyy-MM-dd"), dateTo.ToString("yyyy-MM-dd"));
-            
+            polygonDataLoader.SetParameters(Ticker, Multiplier, Timespan, DateFrom.ToString("yyyy-MM-dd"), DateTo.ToString("yyyy-MM-dd"));
+
             polygonStockPriceData = await polygonDataLoader.LoadPolygonStockDataAsync();
 
             symbol = polygonStockPriceData.Ticker;
@@ -49,6 +62,7 @@ namespace Frontend.Components.MiniComponents {
 
                 try {
                     await databaseHandler.AddPriceDataAsync(symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
+                    await databaseHandler.AddInstrumentDataAsync(symbol);
                 } catch (Exception ex) {
                     Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
                 }
@@ -66,7 +80,7 @@ namespace Frontend.Components.MiniComponents {
             /*
              * Each price data object contains single prices related to a single timestamp
              */
-            
+
             foreach (PriceData priceDataObj in priceData) {
                 double openPx = priceDataObj.OpenPx;
                 double closePx = priceDataObj.ClosePx;
@@ -80,10 +94,12 @@ namespace Frontend.Components.MiniComponents {
         }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
-         * Read all the data relating to the specific ticker passed in from the input from the database
+         * Read all the data relating to the specific Ticker passed in from the input from the database
          * Convert data into a timeseries
          * Create two timeseries for opening and closing price
          * Store this in the data variable and pass this through as a parameter to the graph component
+         * 
+         * I will also need to update the database with new instruments and new price data
          */
     }
 }

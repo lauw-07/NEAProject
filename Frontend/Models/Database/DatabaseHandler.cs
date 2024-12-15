@@ -1,7 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.Diagnostics.Metrics;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Frontend.Models.Database {
 
@@ -45,6 +42,24 @@ namespace Frontend.Models.Database {
             return instruments;
         }
 
+        public async Task<string> GetInstrumentByIDAsync(int id) {
+            string symbol = "";
+            using (SqlConnection connection = new SqlConnection(_connectionString)) {
+                await connection.OpenAsync();
+
+                string query = "SELECT InstrumentSymbol FROM Instruments WHERE InstrumentID = @id";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        symbol = reader.GetString(1);
+                    }
+                }
+            }
+            return symbol;
+        }
+
         public async Task<List<Instrument>> GetInstrumentDataAsync() {
             List<Instrument> instruments = new List<Instrument>();
 
@@ -72,17 +87,17 @@ namespace Frontend.Models.Database {
             return instruments;
         }
 
-        public async Task AddInstrumentDataAsync(string name, string symbol, string type, string currency) {
+        public async Task AddInstrumentDataAsync(string symbol, string name = "", string type = "", string currency = "") {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
                 string query = "INSERT INTO Instruments (InstrumentName,InstrumentSymbol,InstrumentType,InstrumentCurrency) VALUES (@name, @symbol, @type, @currency)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@name", (name == "") ? "NULL" : name);
                 cmd.Parameters.AddWithValue("@symbol", symbol);
-                cmd.Parameters.AddWithValue("@type", type);
-                cmd.Parameters.AddWithValue("@currency", currency);
+                cmd.Parameters.AddWithValue("@type", (type == "") ? "NULL" : type);
+                cmd.Parameters.AddWithValue("@currency", (currency == "") ? "NULL" : currency);
 
                 await cmd.ExecuteNonQueryAsync();
             }
@@ -94,7 +109,7 @@ namespace Frontend.Models.Database {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
-                string query = $"SELECT p.*, i.InstrumentSymbol FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = '@symbol';";
+                string query = $"SELECT p.* FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = '@symbol';";
                 SqlCommand cmd = new SqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@symbol", symbol);
 
