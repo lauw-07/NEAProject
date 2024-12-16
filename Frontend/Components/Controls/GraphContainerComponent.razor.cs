@@ -18,13 +18,17 @@ namespace Frontend.Components.Controls {
 
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
-            Console.WriteLine("OnAfterRenderAsync triggered");
+            Console.WriteLine("OnAfterRenderAsync triggered in GraphContainer component");
 
             if (firstRender) {
                 Console.WriteLine("Fetching intial data from database");
                 symbol = await databaseHandler.GetInstrumentByIDAsync(1);
-
+                Console.WriteLine($"Symbol: {symbol}");
                 TSLists = await ReadFromDatabase();
+                Console.WriteLine(TSLists);
+
+                StateHasChanged();
+
             }
         }
 

@@ -5,22 +5,33 @@ using Microsoft.JSInterop;
 namespace Frontend.Components.Controls {
     public partial class GraphComponent {
         [Parameter]
-        public List<TS>? TSLists { get; set; }
+        public List<TS>? Timeseries { get; set; }
+        private TS? OpenPxTS;
+        private TS? ClosePxTS;
+
+        protected override void OnParametersSet() {
+            if (Timeseries != null && Timeseries.Count > 0) {
+                OpenPxTS = Timeseries[0];
+                ClosePxTS = Timeseries[1];
+            } else {
+                Console.WriteLine("Timeseries data is null");
+            }
+        }
 
         // Pass timeseries into the graphing.js file
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
-            await base.OnAfterRenderAsync(firstRender);
-
+            Console.WriteLine("OnAfterRenderAsync function in Graph Component has been triggered");
             if (firstRender) {
                 /*Format Timeseries data
                  * var formattedTS = ...;
                  *
                  */
-                Console.WriteLine("Attempting to initialise");
-                if (TSLists != null && TSLists.Count != 0) {
-                    var temp = TSLists;
-
+                Console.WriteLine("Attempting First Render");
+                if (Timeseries != null && Timeseries.Count != 0) {
+                    var temp = Timeseries;
+                    Console.WriteLine(temp);
+                    
                     /*
                      * Maybe on initialisation, i could load display some data from the local database
                      */
@@ -29,9 +40,11 @@ namespace Frontend.Components.Controls {
                     Console.WriteLine("Graph drawn");
                 }
             } else {
-                if (TSLists != null && TSLists.Count != 0) {
-                    var temp = TSLists;
+                Console.WriteLine("Not first render");
+                if (Timeseries != null && Timeseries.Count != 0) {
+                    var temp = Timeseries;
 
+                    Console.WriteLine("Attempting to draw graph");
                     await Js.InvokeVoidAsync("DrawGraph", temp);
                 }
             }

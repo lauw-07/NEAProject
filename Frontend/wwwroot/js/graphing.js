@@ -1,7 +1,8 @@
 ﻿const margin = { top: 70, right: 70, bottom: 70, left: 70 }
 
-let parentDiv = document.getElementById("graph");
 function GetDimensions() {
+    const parentDiv = document.getElementById("graph");
+
     let height = parentDiv.clientHeight - margin.left - margin.right;
     let width = parentDiv.clientWidth - margin.top - margin.bottom;
     return { width, height };
@@ -13,7 +14,7 @@ function DrawGraph(dataset) {
     d3.select("#graph").selectAll("*").remove(); //To create new instances of the svg component so that it can be updated with new dimensions
 
     const x = d3.scaleTime()
-        .domain(d3.extent(tempDataset, data => data.timestamp))
+        .domain(d3.extent(dataset, data => data.timestamp))
         .range([0, width]);
 
     const xAxisCall = d3.axisBottom(x)
@@ -24,7 +25,7 @@ function DrawGraph(dataset) {
         .call(xAxisCall);
 
     const y = d3.scaleLinear()
-        .domain([0, d3.max(tempDataset, data => data.value)])
+        .domain([0, d3.max(dataset, data => data.value)])
         .range([height, 0]);
 
     const yAxisCall = d3.axisLeft(y);

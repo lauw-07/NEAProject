@@ -53,7 +53,7 @@ namespace Frontend.Models.Database {
 
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
-                        symbol = reader.GetString(1);
+                        symbol = reader.GetString(0);
                     }
                 }
             }
@@ -109,7 +109,7 @@ namespace Frontend.Models.Database {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
-                string query = $"SELECT p.* FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = '@symbol';";
+                string query = $"SELECT p.* FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = @symbol";
                 SqlCommand cmd = new SqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@symbol", symbol);
 
@@ -123,7 +123,7 @@ namespace Frontend.Models.Database {
                             reader.GetDouble(reader.GetOrdinal("ClosePx")),
                             reader.GetDouble(reader.GetOrdinal("HighPx")),
                             reader.GetDouble(reader.GetOrdinal("LowPx")),
-                            reader.GetInt32(reader.GetOrdinal("Volume"))
+                            reader.GetDouble(reader.GetOrdinal("Volume"))
                         );
 
                         priceDataList.Add(priceData);
