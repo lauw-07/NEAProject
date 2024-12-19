@@ -270,7 +270,7 @@ html, body {
         font-size: 13px;
     }
 
-    .popout-menu:hover .fa-chevron-right {
+    .popout-menu:hover .e-chevron-right {
         transform: rotate(180deg);
     }
 
@@ -306,12 +306,12 @@ html, body {
     padding-bottom: 15px;
 }
 
-    #graph-container .dropdown-inputs .fa-chevron-down {
+    #graph-container .dropdown-inputs .e-chevron-down {
         font-size: 13px;
         transition: 0.3s;
     }
 
-    #graph-container .dropdown-inputs:hover .fa-chevron-down {
+    #graph-container .dropdown-inputs:hover .e-chevron-down {
         transform: rotate(-180deg);
     }
 

@@ -46,23 +46,24 @@ namespace Frontend.Models.Timeseries {
             _values.Add(value);
         }
 
-        public void Add(DateTime[] timestamps, double[] values) {
-            if (timestamps == null || values == null || timestamps.Length != values.Length) return;
+        public void Add(List<DateTime> timestamps, List<double> values) {
+            if (timestamps == null || values == null || timestamps.Count != values.Count) return;
+
             _timestamps.AddRange(timestamps);
             _values.AddRange(values);
         }
-
+        
 
         public void Add(TS other) {
             if (other == null || other.Size() <= 0) return;
             Add(other.GetTimestamps(), other.GetValues());
         }
 
-        public DateTime[] GetTimestamps() { return _timestamps.ToArray(); }
+        public List<DateTime> GetTimestamps() { return _timestamps; }
 
         public DateTime GetTimestamp(int index) { return _timestamps[index]; }
 
-        public double[] GetValues() { return _values.ToArray(); }
+        public List<double> GetValues() { return _values; }
 
         public double GetValue(int index) { return _values[index]; }
 
