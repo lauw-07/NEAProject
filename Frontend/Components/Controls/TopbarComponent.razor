@@ -1,5 +1,4 @@
-﻿@inject IJSRuntime Js;
-
+﻿
 <section id="topBar">
     <div class="small-container">
         <div class="instrumentList">
@@ -18,13 +17,13 @@
                     <span class="selectBtn-text">Instruments</span>
                     <span class="e-icons e-chevron-down"></span>
                 </div>
-                <ul class="options">
+                <div class="options">
                     @foreach (var instrument in _instruments) {
-                        <li class="option" @onclick="() => SelectInstrument(instrument)">
+                        <div class="option" @onclick="() => SelectInstrument(instrument)">
                             <span class="option-text">@instrument</span>
-                        </li>
+                        </div>
                     }
-                </ul>
+                </div>
             </div>
 
 

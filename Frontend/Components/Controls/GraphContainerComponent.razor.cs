@@ -35,8 +35,6 @@ namespace Frontend.Components.Controls {
                 TSLists = await ReadFromDatabase();
                 Console.WriteLine(TSLists);
 
-                await Js.InvokeVoidAsync("InitialiseDropdownMenus");
-
                 StateHasChanged();
 
             }

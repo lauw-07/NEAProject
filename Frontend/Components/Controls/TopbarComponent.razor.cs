@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
     public partial class TopbarComponent {
@@ -15,12 +14,6 @@ namespace Frontend.Components.Controls {
         private void SelectInstrument(string instrument) {
             
             SelectInstrumentCallback.InvokeAsync(instrument);
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender) {
-            if (firstRender) {
-                await Js.InvokeVoidAsync("InitialiseDropdownMenus");
-            }
         }
     }
 }
