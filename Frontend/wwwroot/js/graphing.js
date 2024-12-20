@@ -1,23 +1,32 @@
 ﻿const margin = { top: 70, right: 70, bottom: 70, left: 70 }
-let dimensions = [];
+
 function GetDimensions() {
-    const parentDiv = document.getElementById("graph");
+    /*const parentDiv = document.getElementById("graph");
     const width = parentDiv.clientWidth - margin.top - margin.bottom;
     const height = parentDiv.clientHeight - margin.left - margin.right;
 
     dimensions[0] = width;
-    dimensions[1] = height;
+    dimensions[1] = height;*/
+
+    const width = parseInt(d3.select("#graph").style('width')) - margin.top - margin.bottom;
+    const height = parseInt(d3.select("#graph").style('height')) - margin.left - margin.right;
+
+    return { width, height }
 };
 
 function DrawGraph(datasets) {
     /*const width = dimensions[0];
     const height = dimensions[1];*/
+    const { width, height } = GetDimensions();
 
     d3.select("#graph").selectAll("*").remove(); //To create new instances of the svg component so that it can be updated with new dimensions
 
 
     const svg = d3.select("#graph")
         .append("svg")
+        //.attr("preserveAspectRatio", "xMinYMin meet")
+        //.attr("viewBox", `0 0 ${width} ${height}`)
+        //.attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -64,7 +73,7 @@ function DrawGraph(datasets) {
     });
 };
 
-let hasIntialGraphBeenDrawn = false;
+/*let hasIntialGraphBeenDrawn = false;
 function DynamicDrawGraph(datasets) {
     if (!hasIntialGraphBeenDrawn) {
         DrawGraph(datasets);
@@ -73,4 +82,4 @@ function DynamicDrawGraph(datasets) {
         window.addEventListener("resize", GetDimensions);
         DrawGraph(datasets);
     }
-}
+}*/

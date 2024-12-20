@@ -1,4 +1,6 @@
-﻿<section id="topBar">
+﻿@inject IJSRuntime Js;
+
+<section id="topBar">
     <div class="small-container">
         <div class="instrumentList">
             <!--@foreach(Instrument instrument in instruments) {
@@ -11,39 +13,20 @@
                 Maybe add a pop up notification for the instruments which i have not got data for
             -->
 
-            <div id="dropdown-menu">
+            <div class="dropdown-menu">
                 <div class="select-btn">
                     <span class="selectBtn-text">Instruments</span>
-                    <!--<i class="fa-solid fa-chevron-down"></i>-->
                     <span class="e-icons e-chevron-down"></span>
                 </div>
-
                 <ul class="options">
-                    <li class="option">
-                        <span class="option-text">Indices</span>
-                    </li>
-
-                    <li class="option">
-                        <span class="option-text">FX</span>
-                    </li>
-
-                    <li class="option">
-                        <span class="option-text">Cryptocurrency</span>
-                    </li>
-
-                    <li class="option">
-                        <span class="option-text">Stocks</span>
-                    </li>
-
-                    <li class="option">
-                        <span class="option-text">Commodities</span>
-                    </li>
-
-                    <li class="option">
-                        <span class="option-text">Bonds and Rates</span>
-                    </li>
+                    @foreach (var instrument in _instruments) {
+                        <li class="option" @onclick="() => SelectInstrument(instrument)">
+                            <span class="option-text">@instrument</span>
+                        </li>
+                    }
                 </ul>
             </div>
+
 
         </div>
 

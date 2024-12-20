@@ -88,12 +88,11 @@ html, body {
     align-items: center;
 }
 
-.select-menu {
-    width: 380px;
-    margin: 140px auto;
+.dropdown-menu {
+    position: relative;
 }
 
-#dropdown-menu .select-btn {
+.dropdown-menu .select-btn {
     display: flex;
     padding: 20px;
     font-size: 13px;
@@ -104,7 +103,7 @@ html, body {
 }
 
 
-    #dropdown-menu .select-btn::after {
+    .dropdown-menu .select-btn::after {
         content: '';
         height: 4px;
         width: 0%;
@@ -116,7 +115,7 @@ html, body {
     }
 
 
-    #dropdown-menu .select-btn:hover::after {
+    .dropdown-menu .select-btn:hover::after {
         width: 60%;
         transition: 0.5s;
     }
@@ -127,17 +126,17 @@ html, body {
     color: black;
 }
 
-.select-btn i {
+.select-btn .e-chevron-down {
     font-size: 13px;
     transition: 0.3s;
     color: black;
 }
 
-#dropdown-menu.active .select-btn .e-chevron-down {
+.dropdown-menu.active .select-btn .e-chevron-down {
     transform: rotate(-180deg);
 }
 
-#dropdown-menu .options {
+.dropdown-menu .options {
     position: absolute;
     margin-top: 10px;
     border-radius: 8px;
@@ -147,7 +146,7 @@ html, body {
     display: none;
 }
 
-#dropdown-menu.active .options {
+.dropdown-menu.active .options {
     display: block;
 }
 
@@ -209,6 +208,8 @@ html, body {
     flex-direction: column;
     width: 100%;
     height: 100%;
+    color: black;
+    font-size: 14px;
 }
 
 
@@ -300,6 +301,15 @@ html, body {
 
 
 /*Graph css*/
+#graph-container .graph-headers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 #graph-container .dropdown-inputs {
     position: relative;
     width: fit-content;
@@ -362,6 +372,10 @@ html, body {
 
 .inputs button {
     margin-top: 10px;
+}
+
+.graph-details {
+
 }
 
 #graph {

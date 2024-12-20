@@ -1,9 +1,18 @@
 ﻿using Frontend.Models.Database;
 using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
     public partial class GraphContainerComponent {
+
+        [Parameter]
+        public string? SelectedInstrument { get; set; }
+
+        [Parameter]
+        public string? SelectedStrategy { get; set; }
+
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }
         private string? Timespan { get; set; }
@@ -13,9 +22,8 @@ namespace Frontend.Components.Controls {
         private PolygonStockPriceData? polygonStockPriceData;
         private string symbol = string.Empty;
         private List<Result>? results;
-        private List<TS>? TSLists;
 
-
+        private List<TS>? TSLists; //Parameter to pass on to GraphComponent
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
             Console.WriteLine("OnAfterRenderAsync triggered in GraphContainer component");
@@ -26,6 +34,8 @@ namespace Frontend.Components.Controls {
                 Console.WriteLine($"Symbol: {symbol}");
                 TSLists = await ReadFromDatabase();
                 Console.WriteLine(TSLists);
+
+                await Js.InvokeVoidAsync("InitialiseDropdownMenus");
 
                 StateHasChanged();
 

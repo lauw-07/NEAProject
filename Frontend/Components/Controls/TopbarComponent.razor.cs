@@ -1,0 +1,26 @@
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+
+namespace Frontend.Components.Controls {
+    public partial class TopbarComponent {
+        private List<string> _instruments = new List<string>() {
+            "Indices", "FX", "Cryptocurrency", "Stocks", "Commodities", "Bonds and Rates"
+        };
+        //Using strings here just temporarily to make it easy to test
+
+        //private string? InstrumentParameter;
+        [Parameter]
+        public EventCallback<string> SelectInstrumentCallback { get; set; }
+
+        private void SelectInstrument(string instrument) {
+            
+            SelectInstrumentCallback.InvokeAsync(instrument);
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender) {
+            if (firstRender) {
+                await Js.InvokeVoidAsync("InitialiseDropdownMenus");
+            }
+        }
+    }
+}

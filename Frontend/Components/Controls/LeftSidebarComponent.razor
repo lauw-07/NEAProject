@@ -4,21 +4,9 @@
     </div>
 
     <div class="strategies">
-        <div class="strategy">
-            Exponentially Weighted Moving Average
-        </div>
-
-        <div class="strategy">
-            Bollinger Bands
-        </div>
-
-        <div class="strategy">
-            RSI
-        </div>
-
-        <div class="strategy">
-            Exponentially Weighted Moving Average
-        </div>
+        @foreach (string strat in _popularTradingStrategies) {
+            <div class="strategy" @onclick="() => SelectStrategy(strat)">@strat</div>
+        }
     </div>
 
     <div class="popout-menu">
@@ -27,10 +15,9 @@
             <span class="e-icons e-chevron-right"></span>
         </a>
         <div class="menu-content">
-            <div class="strategy">Linear Regression</div>
-            <div class="strategy">Standard Deviation</div>
-            <div class="strategy">Momentum</div>
-            <div class="strategy">Aroon</div>
+            @foreach (string strat in _extraTradingStrategies) {
+                <div class="strategy" @onclick="() => SelectStrategy(strat)">@strat</div>
+            }
         </div>
     </div>
 

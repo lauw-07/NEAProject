@@ -35,7 +35,7 @@ namespace Frontend.Components.Controls {
                      * Maybe on initialisation, i could load display some data from the local database
                      */
                     Console.WriteLine("Timeseries data received, invoking draw graph function");
-                    await Js.InvokeVoidAsync("DynamicDrawGraph", Dataset);
+                    await Js.InvokeVoidAsync("DrawGraph", Dataset);
                     Console.WriteLine("Graph drawn");
                 }
             } else {
@@ -43,7 +43,7 @@ namespace Frontend.Components.Controls {
                 if (Timeseries != null && Timeseries.Count != 0) {
 
                     Console.WriteLine("Attempting to draw graph");
-                    await Js.InvokeVoidAsync("DynamicDrawGraph", Dataset);
+                    await Js.InvokeVoidAsync("DrawGraph", Dataset);
                 }
             }
         }
