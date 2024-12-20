@@ -12,7 +12,7 @@ namespace Frontend.Components.Controls {
         public EventCallback<string> SelectInstrumentCallback { get; set; }
 
         private void SelectInstrument(string instrument) {
-            
+            Console.WriteLine($"Selected Instrument: {instrument}");
             SelectInstrumentCallback.InvokeAsync(instrument);
         }
     }

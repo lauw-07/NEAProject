@@ -10,8 +10,20 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedInstrument { get; set; }
 
+
         [Parameter]
         public string? SelectedStrategy { get; set; }
+
+        List<string> _selectedStrategyList = new List<string>();
+
+        protected override void OnParametersSet() {
+            if (SelectedStrategy != null) {
+                if (!_selectedStrategyList.Contains(SelectedStrategy)) {
+                    _selectedStrategyList.Add(SelectedStrategy);
+                }
+            }
+        }
+
 
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }

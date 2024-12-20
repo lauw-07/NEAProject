@@ -47,10 +47,15 @@
             </div>
             <div class="options">
                 <div class="option">
+                    <span class="option-text-title">Instrument:</span>
                     <span class="option-text">@SelectedInstrument</span>
                 </div>
                 <div class="option">
-                    <span class="option-text">@SelectedStrategy</span>
+                    <span class="option-text-title">Indicators:</span>
+                    @foreach (string strat in _selectedStrategyList) {
+                    
+                            <span class="option-text">@strat</span>
+                    }
                 </div>
             </div>
         </div>

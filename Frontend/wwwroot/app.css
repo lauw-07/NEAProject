@@ -138,7 +138,7 @@ html, body {
 
 .dropdown-menu .options {
     position: absolute;
-
+    min-width: 130px;
     border-radius: 8px;
     padding: 5px;
     background: #fff;
@@ -372,6 +372,11 @@ html, body {
 
 .inputs button {
     margin-top: 10px;
+}
+
+.option-text-title {
+    padding-bottom: 5px;
+    font-size: 15px;
 }
 
 #graph {
