@@ -156,7 +156,7 @@ html, body {
     border-radius: 8px;
     padding-top: 5px;
     padding: 5px 5px;
-    align-items: center;
+
 }
 
     .options .option:hover {
@@ -164,7 +164,7 @@ html, body {
     }
 
 .option .option-text {
-    font-size: 13px;
+    font-size: 14px;
     color: #000000;
 }
 
@@ -374,9 +374,25 @@ html, body {
     margin-top: 10px;
 }
 
+#graph-container .options {
+    min-width: 200px;
+}
+
+#graph-container .option-text {
+    width: fit-content;
+    padding-left: 15px;
+}
+
 .option-text-title {
     padding-bottom: 5px;
-    font-size: 15px;
+    font-size: 14px;
+}
+
+.strategy-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
 }
 
 #graph {

@@ -123,9 +123,7 @@ namespace Frontend.Components.Controls {
         private void CreateIndicatorTS(List<TS> originalTimeseries, string strategy) {
             //My strategy will take in the original timeseries as a parameter and return a List<TS> object
             //I can then set the IndicatorTSParameter as this timeseries object
-            if (originalTimeseries == null || originalTimeseries.Count <= 0) {
-                return;
-            }
+            
         }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)

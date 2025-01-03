@@ -6,8 +6,13 @@ namespace Frontend.Components.Controls {
     public partial class GraphComponent {
         [Parameter]
         public List<TS>? Timeseries { get; set; }
+
+        [Parameter]
+        public List<TS>? IndicatorTS { get; set; }
+
         private readonly List<Dictionary<string, object>> Dataset = new();
 
+        //Need to loop through the indicator timeseries aswell and pass it on inside the Dataset object
         protected override void OnParametersSet() {
             if (Timeseries != null && Timeseries.Count > 0) {
                 foreach (TS timeseries in Timeseries) {

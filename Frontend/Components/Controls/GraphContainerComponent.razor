@@ -48,14 +48,16 @@
             <div class="options">
                 <div class="option">
                     <span class="option-text-title">Instrument:</span>
-                    <span class="option-text">@SelectedInstrument</span>
+                    <span class="option-text">@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
                 </div>
                 <div class="option">
                     <span class="option-text-title">Indicators:</span>
-                    @foreach (string strat in _selectedStrategyList) {
-                    
+                    <div class="strategy-list">
+                        @foreach (string strat in _selectedStrategyList) {
+
                             <span class="option-text">@strat</span>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -65,9 +67,10 @@
         This would also mean that a parameter needs to be passed in from inputs made in the topbar component as well as the sidebar component
     -->
 
-    @if (TSLists != null && TSLists.Any()) {
+    @if (TimeseriesParameter != null && TimeseriesParameter.Any()) {
         <GraphComponent 
-            Timeseries="@TSLists" 
+            Timeseries="@TimeseriesParameter" 
+            IndicatorTS="@IndicatorTSParameter"
             @rendermode="InteractiveServer" />
     }
     
