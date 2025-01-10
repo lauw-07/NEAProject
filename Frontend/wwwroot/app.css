@@ -138,9 +138,8 @@ html, body {
 
 .dropdown-menu .options {
     position: absolute;
-    min-width: 130px;
-    border-radius: 8px;
-    padding: 5px;
+    min-width: 100px;
+    border-radius: 10px;
     background: #fff;
     box-shadow: 0 0 10px #ccc;
     display: none;
@@ -152,11 +151,11 @@ html, body {
 
 .options .option {
     display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 13px;
     cursor: pointer;
-    border-radius: 8px;
-    padding-top: 5px;
-    padding: 5px 5px;
-
+    border-radius: 9px;
 }
 
     .options .option:hover {
@@ -399,4 +398,5 @@ html, body {
     color: black;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }

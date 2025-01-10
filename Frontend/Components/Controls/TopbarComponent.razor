@@ -1,4 +1,6 @@
-﻿<section id="topBar">
+﻿@inject Models.Database.DatabaseHandler databaseHandler;
+
+<section id="topBar">
     <div class="small-container">
         <div class="instrumentList">
             <!--@foreach(Instrument instrument in instruments) {
@@ -18,8 +20,23 @@
                 </div>
                 <div class="options">
                     @foreach (var instrument in _instruments) {
-                        <div class="option" @onclick="() => SelectInstrument(instrument)">
-                            <span class="option-text">@instrument</span>
+                        <div class="option" @onmouseover="() => SelectInstrument(instrument)">
+                            <div class="popout-menu">
+                                <a href="#">
+                                    <span class="option-text">@instrument</span>
+                                </a>
+                                <div class="menu-content">
+                                    @foreach (string market in _availableMarkets) {
+                                        <div class="strategy" @onclick="() => SelectMarket(market)">@market</div>
+                                        //the class "strategy" is a bit too specific, maybe look and try change all occurences to something more generic
+                                    }
+
+                                    @if (_availableMarkets.Count == 0) {
+                                        <div class="strategy">No available markets</div>
+                                    }
+                                </div>
+                            </div>
+                            
                         </div>
                     } 
                 </div>

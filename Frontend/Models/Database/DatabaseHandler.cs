@@ -60,12 +60,33 @@ namespace Frontend.Models.Database {
             return symbol;
         }
 
+        public async Task<string> GetInstrumentByNameAsync(string name) {
+            if (name == null) {
+                //Just a default market because I know that my database has some data for this market already
+                return "AAPL";
+            }
+            string symbol = "";
+            using (SqlConnection connection = new SqlConnection(_connectionString)) {
+                await connection.OpenAsync();
+
+                string query = "SELECT InstrumentSymbol FROM Instruments WHERE InstrumentName = @name";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@name", name);
+
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        symbol = reader.GetString(0);
+                    }
+                }
+            }
+            return symbol;
+        }
+
         public async Task<List<Instrument>> GetInstrumentDataAsync() {
             List<Instrument> instruments = new List<Instrument>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
-
 
                 string query = "SELECT * FROM Instruments";
                 SqlCommand cmd = new SqlCommand(query, connection);

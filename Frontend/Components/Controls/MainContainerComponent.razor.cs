@@ -6,6 +6,9 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedInstrument {  get; set; }
 
+        [Parameter]
+        public string? SelectedMarket { get; set; }
+
         private string? selectedStrategy;
 
         private void HandleStrategySelection(string strategy) {

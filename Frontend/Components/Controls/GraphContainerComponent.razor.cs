@@ -10,6 +10,8 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedInstrument { get; set; }
 
+        [Parameter]
+        public string? SelectedMarket { get; set; }
 
         [Parameter]
         public string? SelectedStrategy { get; set; }
@@ -46,7 +48,7 @@ namespace Frontend.Components.Controls {
 
             if (firstRender) {
                 Console.WriteLine("Fetching intial data from database");
-                symbol = await databaseHandler.GetInstrumentByIDAsync(1);
+                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedMarket);
                 Console.WriteLine($"Symbol: {symbol}");
                 TimeseriesParameter = await ReadFromDatabase();
                 Console.WriteLine(TimeseriesParameter);
