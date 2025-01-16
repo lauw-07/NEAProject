@@ -112,6 +112,7 @@ namespace Frontend.Models.Database {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
+                //MUST CHECK THAT DATABASE DOES NOT ALREADY CONTAIN DATA BEING INSERTED (NOT TOO HARD THOUGH)
                 string query = "INSERT INTO Instruments (InstrumentName,InstrumentSymbol,InstrumentType,InstrumentCurrency) VALUES (@name, @symbol, @type, @currency)";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
@@ -130,7 +131,8 @@ namespace Frontend.Models.Database {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
-                string query = $"SELECT p.* FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = @symbol";
+                string query = $"SELECT p.* FROM PriceData p INNER JOIN Instruments i ON p.InstrumentID = i.InstrumentID WHERE i.InstrumentSymbol = @symbol ORDER BY p.PxDate ASC";
+                //price data is fetched from oldest prices to newest prices
                 SqlCommand cmd = new SqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@symbol", symbol);
 

@@ -1,12 +1,12 @@
 ﻿<div id="main-container">
     <LeftSidebarComponent 
-        SelectStrategyCallback="HandleStrategySelection"/>
+        SelectIndicatorCallback="HandleIndicatorSelection"/>
 
     <GraphContainerComponent 
         @rendermode="InteractiveServer"
         SelectedInstrument="@SelectedInstrument"
-        SelectedStrategy="@selectedStrategy"
-        SelectedMarket="@SelectedMarket"/>
+        SelectedIndicator="@selectedIndicator"
+        SelectedItem="@SelectedItem"/>
 
     <RightSidebarComponent />
 </div>

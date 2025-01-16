@@ -68,5 +68,7 @@ namespace Frontend.Models.Timeseries {
         public double GetValue(int index) { return _values[index]; }
 
         public int Size() { return _timestamps.Count; }
+
+        
     }
 }

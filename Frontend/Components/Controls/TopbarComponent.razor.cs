@@ -7,7 +7,7 @@ namespace Frontend.Components.Controls {
             "Indices", "FX", "Cryptocurrency", "Stocks", "Commodities", "Bonds and Rates"
         };
 
-        private List<string> _availableMarkets = new List<string>();
+        private List<string> _availableItems = new List<string>();
         //Using strings here just temporarily to make it easy to test
 
         //private string? InstrumentParameter;
@@ -15,22 +15,23 @@ namespace Frontend.Components.Controls {
         public EventCallback<string> SelectInstrumentCallback { get; set; }
 
         [Parameter]
-        public EventCallback<string> SelectMarketCallback { get; set; }
+        public EventCallback<string> SelectItemCallback { get; set; }
 
         private string? instrumentSelected;
 
-        private void SelectInstrument(string instrument) {
+        private async Task SelectInstrument(string instrument) {
             Console.WriteLine($"Selected Instrument: {instrument}");
             instrumentSelected = instrument;
-            SelectInstrumentCallback.InvokeAsync(instrument);
+            await GetAvailableItems(instrument);
+            await SelectInstrumentCallback.InvokeAsync(instrument);
         }
 
-        private void SelectMarket(string market) {
-            Console.WriteLine($"Selected Market: {market}");
-            SelectMarketCallback.InvokeAsync(market);
+        private void SelectItem(string items) {
+            Console.WriteLine($"Selected Item: {items}");
+            SelectItemCallback.InvokeAsync(items);
         }
 
-        private async Task GetAvailableMarkets(string instrumentType) {
+        private async Task GetAvailableItems(string instrumentType) {
             List<string> instrumentNames = new List<string>();
             
             List<Instrument> instruments = await databaseHandler.GetInstrumentDataAsync();
@@ -39,6 +40,8 @@ namespace Frontend.Components.Controls {
                     instrumentNames.Add(instrument.InstrumentName);
                 }
             }
+
+            _availableItems = instrumentNames;
         }
     }
 }

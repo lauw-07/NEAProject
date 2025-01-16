@@ -1,4 +1,5 @@
 ﻿using Frontend.Models.Database;
+using Frontend.Models.Indicators;
 using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
@@ -11,21 +12,21 @@ namespace Frontend.Components.Controls {
         public string? SelectedInstrument { get; set; }
 
         [Parameter]
-        public string? SelectedMarket { get; set; }
+        public string? SelectedItem { get; set; }
 
         [Parameter]
-        public string? SelectedStrategy { get; set; }
+        public string? SelectedIndicator { get; set; }
 
-        List<string> _selectedStrategyList = new List<string>();
+        List<string> _selectedIndicatorList = new List<string>();
 
         protected override void OnParametersSet() {
-            if (SelectedStrategy != null) {
-                if (!_selectedStrategyList.Contains(SelectedStrategy)) {
-                    _selectedStrategyList.Add(SelectedStrategy);
+            if (SelectedIndicator != null) {
+                if (!_selectedIndicatorList.Contains(SelectedIndicator)) {
+                    _selectedIndicatorList.Add(SelectedIndicator);
                 }
 
                 if (TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
-                    CreateIndicatorTS(TimeseriesParameter, SelectedStrategy);
+                    CreateIndicatorTS(TimeseriesParameter, SelectedIndicator);
                 }
             }
         }
@@ -40,15 +41,15 @@ namespace Frontend.Components.Controls {
         private string symbol = string.Empty;
         private List<Result>? results;
 
-        private List<TS>? TimeseriesParameter; //Parameter to pass on to GraphComponent
-        private List<TS>? IndicatorTSParameter;
+        private List<TS> TimeseriesParameter = new(); //Parameter to pass on to GraphComponent
+        private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
             Console.WriteLine("OnAfterRenderAsync triggered in GraphContainer component");
 
             if (firstRender) {
                 Console.WriteLine("Fetching intial data from database");
-                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedMarket);
+                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedItem);
                 Console.WriteLine($"Symbol: {symbol}");
                 TimeseriesParameter = await ReadFromDatabase();
                 Console.WriteLine(TimeseriesParameter);
@@ -91,8 +92,12 @@ namespace Frontend.Components.Controls {
 
                 try {
                     await databaseHandler.AddPriceDataAsync(symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
+
+
+                    // I Would not do this normally but since I am only using an API to get stock price data, i will hard code in the details which get passed into the database because these details are not provided by the API
+                    // I considered widening my database to create new relations like Market to encompass which stocks are under which markets. however, since the API does not provide this much data, this would not be created very effectively so i decided against that.
                     await databaseHandler.AddInstrumentDataAsync(symbol);
-                } catch (Exception ex) {
+                } catch (Exception ex) { 
                     Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
                 }
             }
@@ -122,11 +127,28 @@ namespace Frontend.Components.Controls {
             return new List<TS> { openPxTimeseries, closePxTimeseries };
         }
 
-        private void CreateIndicatorTS(List<TS> originalTimeseries, string strategy) {
+        private void CreateIndicatorTS(List<TS> originalTimeseries, string indicator) {
             //My strategy will take in the original timeseries as a parameter and return a List<TS> object
             //I can then set the IndicatorTSParameter as this timeseries object
             if (originalTimeseries == null || originalTimeseries.Count <= 0) {
                 return;
+            }
+
+            TS openPxTS = originalTimeseries[0];
+            TS closePxTS = originalTimeseries[1];
+
+            switch (indicator) {
+                case "Simple Moving Average":
+                    //for now i will choose my own values for the n-day period
+                    //This is not very optimised right now, will need to optimise
+                    SMA sma20openPx = new SMA(openPxTS, 20);
+                    SMA sma20closePx = new SMA(closePxTS, 20);
+
+                    TS sma20openPxTS = sma20openPx.GetSmaTS();
+                    TS sma20closePxTS = sma20closePx.GetSmaTS();
+                    IndicatorTSParameter.Add(sma20openPxTS);
+                    IndicatorTSParameter.Add(sma20closePxTS);
+                    break;
             }
         }
 

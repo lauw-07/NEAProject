@@ -7,12 +7,12 @@ namespace Frontend.Components.Controls {
         public string? SelectedInstrument {  get; set; }
 
         [Parameter]
-        public string? SelectedMarket { get; set; }
+        public string? SelectedItem { get; set; }
 
-        private string? selectedStrategy;
+        private string? selectedIndicator;
 
-        private void HandleStrategySelection(string strategy) {
-            selectedStrategy = strategy;
+        private void HandleIndicatorSelection(string indicator) {
+            selectedIndicator = indicator;
         }
 
     }

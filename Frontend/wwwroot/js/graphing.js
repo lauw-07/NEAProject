@@ -55,7 +55,8 @@ function DrawGraph(datasets) {
     
     //need to figure out how to draw multiple line graphs on the same chart
     //A TS object contains List of timestamps and a List of values
-
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    let i = 0;
     datasets.forEach(ts => {
         const formattedDataset = ts.timestamps.map((timestamp, index) => ({
             timestamp: new Date(timestamp),
@@ -65,11 +66,13 @@ function DrawGraph(datasets) {
         svg.append("path")
             .datum(formattedDataset)
             .attr("fill", "none")
-            .attr("stroke", "steelblue")
+            .attr("stroke", color(i))
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
                 .x(datapoint => x(datapoint.timestamp))
-                .y(datapoint => y(datapoint.value)))
+                .y(datapoint => y(datapoint.value))
+            );
+        i++;
     });
 };
 

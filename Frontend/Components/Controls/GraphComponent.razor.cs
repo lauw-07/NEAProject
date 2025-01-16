@@ -15,17 +15,27 @@ namespace Frontend.Components.Controls {
         //Need to loop through the indicator timeseries aswell and pass it on inside the Dataset object
         protected override void OnParametersSet() {
             if (Timeseries != null && Timeseries.Count > 0) {
-                foreach (TS timeseries in Timeseries) {
-                    List<string> timestamps = timeseries.GetTimestamps().Select(ts => ts.ToShortDateString()).ToList();
-                    List<double> values = timeseries.GetValues();
-
-                    Dataset.Add(new Dictionary<string, object> {
-                        { "timestamps", timestamps },
-                        { "values", values }
-                    });
-                }
+                AddToDataset(Timeseries);
             } else {
                 Console.WriteLine("Timeseries data is null");
+            }
+
+            if (IndicatorTS != null && IndicatorTS.Count > 0) {
+                AddToDataset(IndicatorTS);
+            } else {
+                Console.WriteLine("Indicator timeseries data is null");
+            }
+        }
+
+        private void AddToDataset(List<TS> timeseries) {
+            foreach (TS ts in timeseries) {
+                List<string> timestamps = ts.GetTimestamps().Select(ts => ts.ToShortDateString()).ToList();
+                List<double> values = ts.GetValues();
+
+                Dataset.Add(new Dictionary<string, object> {
+                        { "timestamps", timestamps },
+                        { "values", values }
+                });
             }
         }
 

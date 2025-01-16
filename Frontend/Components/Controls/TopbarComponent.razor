@@ -26,13 +26,13 @@
                                     <span class="option-text">@instrument</span>
                                 </a>
                                 <div class="menu-content">
-                                    @foreach (string market in _availableMarkets) {
-                                        <div class="strategy" @onclick="() => SelectMarket(market)">@market</div>
-                                        //the class "strategy" is a bit too specific, maybe look and try change all occurences to something more generic
+                                    @foreach (string item in _availableItems) {
+                                        <div class="indicator" @onclick="() => SelectItem(item)">@item</div>
+                                        //the class "indicator" is a bit too specific, maybe look and try change all occurences to something more generic
                                     }
 
-                                    @if (_availableMarkets.Count == 0) {
-                                        <div class="strategy">No available markets</div>
+                                    @if (_availableItems.Count == 0) {
+                                        <div class="indicator">No available markets</div>
                                     }
                                 </div>
                             </div>

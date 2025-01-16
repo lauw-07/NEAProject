@@ -1,11 +1,11 @@
 ﻿<section id="leftSideBar" class="child">
-    <div class="strategies-title">
+    <div class="indicators-title">
         <p>Popular Indicators</p>
     </div>
 
-    <div class="strategies">
-        @foreach (string strat in _popularTradingStrategies) {
-            <div class="strategy" @onclick="() => SelectStrategy(strat)">@strat</div>
+    <div class="indicators">
+        @foreach (string indicator in _popularTradingIndicators) {
+            <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>
         }
     </div>
 
@@ -15,8 +15,8 @@
             <span class="e-icons e-chevron-right"></span>
         </a>
         <div class="menu-content">
-            @foreach (string strat in _extraTradingStrategies) {
-                <div class="strategy" @onclick="() => SelectStrategy(strat)">@strat</div>
+            @foreach (string indicator in _extraTradingIndicators) {
+                <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>
             }
         </div>
     </div>
