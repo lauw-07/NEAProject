@@ -12,7 +12,7 @@ namespace Frontend.Components.Controls {
         public string? SelectedInstrument { get; set; }
 
         [Parameter]
-        public string? SelectedItem { get; set; }
+        public string? SelectedSecurity { get; set; }
 
         [Parameter]
         public string? SelectedIndicator { get; set; }
@@ -49,12 +49,18 @@ namespace Frontend.Components.Controls {
 
             if (firstRender) {
                 Console.WriteLine("Fetching intial data from database");
-                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedItem);
+                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
                 Console.WriteLine($"Symbol: {symbol}");
                 TimeseriesParameter = await ReadFromDatabase();
                 Console.WriteLine(TimeseriesParameter);
 
                 StateHasChanged();
+            } else {
+                Console.WriteLine("Fetching new data from database");
+                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
+                Console.WriteLine($"Ticker: {symbol}");
+                TimeseriesParameter = await ReadFromDatabase();
+                Console.WriteLine(TimeseriesParameter);
             }
         }
 
@@ -73,8 +79,10 @@ namespace Frontend.Components.Controls {
 
             polygonStockPriceData = await polygonDataLoader.LoadPolygonStockDataAsync();
 
-            symbol = polygonStockPriceData.Ticker;
-            results = polygonStockPriceData.Results;
+            if (polygonStockPriceData != null) {
+                symbol = polygonStockPriceData.Ticker;
+                results = polygonStockPriceData.Results;
+            }
         }
 
         private async Task SaveToDatabase() {
@@ -93,9 +101,6 @@ namespace Frontend.Components.Controls {
                 try {
                     await databaseHandler.AddPriceDataAsync(symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
 
-
-                    // I Would not do this normally but since I am only using an API to get stock price data, i will hard code in the details which get passed into the database because these details are not provided by the API
-                    // I considered widening my database to create new relations like Market to encompass which stocks are under which markets. however, since the API does not provide this much data, this would not be created very effectively so i decided against that.
                     await databaseHandler.AddInstrumentDataAsync(symbol);
                 } catch (Exception ex) { 
                     Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
@@ -141,8 +146,8 @@ namespace Frontend.Components.Controls {
                 case "Simple Moving Average":
                     //for now i will choose my own values for the n-day period
                     //This is not very optimised right now, will need to optimise
-                    SMA sma20openPx = new SMA(openPxTS, 20);
-                    SMA sma20closePx = new SMA(closePxTS, 20);
+                    Sma sma20openPx = new Sma(openPxTS, 20);
+                    Sma sma20closePx = new Sma(closePxTS, 20);
 
                     TS sma20openPxTS = sma20openPx.GetSmaTS();
                     TS sma20closePxTS = sma20closePx.GetSmaTS();

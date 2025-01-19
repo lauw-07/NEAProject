@@ -1,23 +1,23 @@
 ﻿using Frontend.Models.Timeseries;
 
 namespace Frontend.Models.Indicators {
-    public class SMA {
+    public class Sma {
         public TS OriginalTS { get; set; }
         public int N { get; set; }
 
         private TS smaTS = new();
 
-        public SMA(TS originalTS, int n) {
+        public Sma(TS originalTS, int n) {
             OriginalTS = originalTS;
             N = n;
         }
 
-        private double CalculateSMAAverage(List<double> prices) {
+        private double CalculateSmaAverage(List<double> prices) {
             double sum = prices.Sum();
             return sum / N;
         }
 
-        private void ApplySMA() {
+        private void ApplySma() {
             if (OriginalTS == null || OriginalTS.Size() == 0) {
                 throw new InvalidOperationException("Empty TS");
             }
@@ -33,13 +33,13 @@ namespace Frontend.Models.Indicators {
             for (int i = 0; i <= OriginalTS.Size() - N; i++) {
                 List<double> window = values.GetRange(i, N);
 
-                double sma = CalculateSMAAverage(window);
+                double sma = CalculateSmaAverage(window);
                 smaTS.Add(timestamps[i + N - 1], sma);
             }
         }
 
         public TS GetSmaTS() {
-            ApplySMA();
+            ApplySma();
             return smaTS;
         }
     }

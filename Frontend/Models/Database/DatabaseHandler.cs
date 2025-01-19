@@ -15,7 +15,6 @@ namespace Frontend.Models.Database {
         public DatabaseHandler(string connectionString) {
             _connectionString = connectionString;
         }
-
         public async Task<List<Instrument>> GetInstrumentDataAsync(string symbol) {
             List<Instrument> instruments = new List<Instrument>();
 
@@ -60,7 +59,7 @@ namespace Frontend.Models.Database {
             return symbol;
         }
 
-        public async Task<string> GetInstrumentByNameAsync(string name) {
+        public async Task<string> GetInstrumentByNameAsync(string? name) {
             if (name == null) {
                 //Just a default market because I know that my database has some data for this market already
                 return "AAPL";
@@ -82,14 +81,15 @@ namespace Frontend.Models.Database {
             return symbol;
         }
 
-        public async Task<List<Instrument>> GetInstrumentDataAsync() {
+        public async Task<List<Instrument>> GetInstrumentDataByTypeAsync(string instrumentType) {
             List<Instrument> instruments = new List<Instrument>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
-                string query = "SELECT * FROM Instruments";
+                string query = "SELECT * FROM Instruments WHERE InstrumentType = @instrumentType";
                 SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@instrumentType", instrumentType);
 
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync())
@@ -163,7 +163,7 @@ namespace Frontend.Models.Database {
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
-                string query = "INSERT INTO PriceData (InstrumentID,PxDate,OpenPx,ClosePx,HighPx,LowPx,Volume) VALUES (@instrumentID,@pxDate,@openPx,@closePx,@highPx,@lowPx,@volume);";
+                string query = "INSERT INTO PriceData (InstrumentID, PxDate, OpenPx, ClosePx, HighPx, LowPx, Volume) \r\nSELECT @instrumentID, @pxDate, @openPx, @closePx, @highPx, @lowPx, @volume\r\nWHERE NOT EXISTS (\r\n\tSELECT 1\r\n\tFROM PriceData\r\n\tWHERE InstrumentID = @instrumentID AND PxDate = @pxDate\r\n);";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@instrumentID", instrumentID);

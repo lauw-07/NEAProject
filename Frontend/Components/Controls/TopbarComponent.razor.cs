@@ -4,10 +4,10 @@ using Frontend.Models.Database;
 namespace Frontend.Components.Controls {
     public partial class TopbarComponent {
         private List<string> _instruments = new List<string>() {
-            "Indices", "FX", "Cryptocurrency", "Stocks", "Commodities", "Bonds and Rates"
+            "Indices", "FX", "Cryptocurrency", "Stock", "Commodities", "Bonds and Rates"
         };
 
-        private List<string> _availableItems = new List<string>();
+        private List<string> _availableSecurities = new List<string>();
         //Using strings here just temporarily to make it easy to test
 
         //private string? InstrumentParameter;
@@ -15,33 +15,31 @@ namespace Frontend.Components.Controls {
         public EventCallback<string> SelectInstrumentCallback { get; set; }
 
         [Parameter]
-        public EventCallback<string> SelectItemCallback { get; set; }
+        public EventCallback<string> SelectSecurityCallback { get; set; }
 
         private string? instrumentSelected;
 
         private async Task SelectInstrument(string instrument) {
             Console.WriteLine($"Selected Instrument: {instrument}");
             instrumentSelected = instrument;
-            await GetAvailableItems(instrument);
+            await GetAvailableSecurities(instrument);
             await SelectInstrumentCallback.InvokeAsync(instrument);
         }
 
-        private void SelectItem(string items) {
-            Console.WriteLine($"Selected Item: {items}");
-            SelectItemCallback.InvokeAsync(items);
+        private void SelectSecurity(string security) {
+            Console.WriteLine($"Selected Security: {security}");
+            SelectSecurityCallback.InvokeAsync(security);
         }
 
-        private async Task GetAvailableItems(string instrumentType) {
+        private async Task GetAvailableSecurities(string instrumentType) {
             List<string> instrumentNames = new List<string>();
             
-            List<Instrument> instruments = await databaseHandler.GetInstrumentDataAsync();
+            List<Instrument> instruments = await databaseHandler.GetInstrumentDataByTypeAsync(instrumentType);
             foreach (Instrument instrument in instruments) {
-                if (instrument.InstrumentType == instrumentSelected) {
-                    instrumentNames.Add(instrument.InstrumentName);
-                }
+                instrumentNames.Add(instrument.InstrumentName);
             }
 
-            _availableItems = instrumentNames;
+            _availableSecurities = instrumentNames;
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿<div class="entire-container">
     <TopbarComponent 
         SelectInstrumentCallback="HandleInstrumentSelection"
-        SelectItemCallback="HandleItemSelection"/>
+        SelectSecurityCallback="HandleSecuritySelection"/>
 
     <MainContainerComponent 
         SelectedInstrument="@selectedInstrument"
-        SelectedItem="@selectedItem"/>
+        SelectedSecurity="@selectedSecurity"/>
 </div>
 
 @code {

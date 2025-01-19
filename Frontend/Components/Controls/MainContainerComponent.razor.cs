@@ -7,7 +7,7 @@ namespace Frontend.Components.Controls {
         public string? SelectedInstrument {  get; set; }
 
         [Parameter]
-        public string? SelectedItem { get; set; }
+        public string? SelectedSecurity { get; set; }
 
         private string? selectedIndicator;
 

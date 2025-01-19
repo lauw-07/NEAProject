@@ -19,9 +19,9 @@ function DrawGraph(datasets) {
     const height = dimensions[1];*/
     const { width, height } = GetDimensions();
 
-    d3.select("#graph").selectAll("*").remove(); //To create new instances of the svg component so that it can be updated with new dimensions
-
-
+    //To create new instances of the svg component so that it can be updated with new dimensions
+    d3.select("#graph").selectAll("*").remove();
+    
     const svg = d3.select("#graph")
         .append("svg")
         //.attr("preserveAspectRatio", "xMinYMin meet")
@@ -34,7 +34,7 @@ function DrawGraph(datasets) {
 
     const timestamps = datasets.flatMap(ts => ts.timestamps);
     const x = d3.scaleTime()
-        .domain(d3.extent(timestamps, timestamp => new Date(timestamp)))
+        .domain(d3.extent(timestamps, timestamp => d3.timeParse("%d/%m/%Y")(timestamp)))
         .range([0, width]);
 
     const xAxisCall = d3.axisBottom(x)
@@ -52,14 +52,14 @@ function DrawGraph(datasets) {
     const yAxisCall = d3.axisLeft(y);
     svg.append("g")
         .call(yAxisCall);
-    
+
     //need to figure out how to draw multiple line graphs on the same chart
     //A TS object contains List of timestamps and a List of values
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     let i = 0;
     datasets.forEach(ts => {
         const formattedDataset = ts.timestamps.map((timestamp, index) => ({
-            timestamp: new Date(timestamp),
+            timestamp: d3.timeParse("%d/%m/%Y")(timestamp),
             value: ts.values[index]
         }));
 

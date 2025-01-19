@@ -26,12 +26,12 @@
                                     <span class="option-text">@instrument</span>
                                 </a>
                                 <div class="menu-content">
-                                    @foreach (string item in _availableItems) {
-                                        <div class="indicator" @onclick="() => SelectItem(item)">@item</div>
+                                    @foreach (string security in _availableSecurities) {
+                                        <div class="indicator" @onclick="() => SelectSecurity(security)">@security</div>
                                         //the class "indicator" is a bit too specific, maybe look and try change all occurences to something more generic
                                     }
 
-                                    @if (_availableItems.Count == 0) {
+                                    @if (_availableSecurities.Count == 0) {
                                         <div class="indicator">No available markets</div>
                                     }
                                 </div>

@@ -14,6 +14,7 @@ namespace Frontend.Components.Controls {
 
         //Need to loop through the indicator timeseries aswell and pass it on inside the Dataset object
         protected override void OnParametersSet() {
+            Dataset.Clear();
             if (Timeseries != null && Timeseries.Count > 0) {
                 AddToDataset(Timeseries);
             } else {
