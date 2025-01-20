@@ -146,13 +146,30 @@ namespace Frontend.Components.Controls {
                 case "Simple Moving Average":
                     //for now i will choose my own values for the n-day period
                     //This is not very optimised right now, will need to optimise
-                    Sma sma20openPx = new Sma(openPxTS, 20);
-                    Sma sma20closePx = new Sma(closePxTS, 20);
 
-                    TS sma20openPxTS = sma20openPx.GetSmaTS();
-                    TS sma20closePxTS = sma20closePx.GetSmaTS();
-                    IndicatorTSParameter.Add(sma20openPxTS);
-                    IndicatorTSParameter.Add(sma20closePxTS);
+                    if (!openPxTS.RemoveIndicator("Sma")) {
+                        TS sma20openPxTs = openPxTS.Sma(20);
+                        IndicatorTSParameter.Add(sma20openPxTs);
+                    }
+
+                    if (!closePxTS.RemoveIndicator("Sma")) {
+                        TS sma20closePxTs = closePxTS.Sma(20);
+                        IndicatorTSParameter.Add(sma20closePxTs);
+                    }
+                    break;
+                case "Exponentially Weighted Moving Average":
+                    if (!openPxTS.RemoveIndicator("Ewma")) {
+                        TS ewma20openPxTs = openPxTS.Ewma(20);
+                        IndicatorTSParameter.Add(ewma20openPxTs);
+                    }
+                    
+                    if (!closePxTS.RemoveIndicator("Ewma")) {
+                        TS ewma20closePxTs = closePxTS.Ewma(20);
+                        IndicatorTSParameter.Add(ewma20closePxTs);
+                    }
+                    
+                    break;
+                default:
                     break;
             }
         }
