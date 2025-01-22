@@ -20,14 +20,16 @@ namespace Frontend.Components.Controls {
         List<string> _selectedIndicatorList = new List<string>();
 
         protected override void OnParametersSet() {
-            if (SelectedIndicator != null) {
+            if (SelectedIndicator != null && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
                 if (!_selectedIndicatorList.Contains(SelectedIndicator)) {
                     _selectedIndicatorList.Add(SelectedIndicator);
+                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
+                } else { 
+                    _selectedIndicatorList.Remove(SelectedIndicator);
+                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
                 }
 
-                if (TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
-                    CreateIndicatorTS(TimeseriesParameter, SelectedIndicator);
-                }
+                StateHasChanged();
             }
         }
 
@@ -61,6 +63,8 @@ namespace Frontend.Components.Controls {
                 Console.WriteLine($"Ticker: {symbol}");
                 TimeseriesParameter = await ReadFromDatabase();
                 Console.WriteLine(TimeseriesParameter);
+
+                StateHasChanged();
             }
         }
 
@@ -132,42 +136,53 @@ namespace Frontend.Components.Controls {
             return new List<TS> { openPxTimeseries, closePxTimeseries };
         }
 
-        private void CreateIndicatorTS(List<TS> originalTimeseries, string indicator) {
+        private void UpdateIndicatorTs(List<TS> originalTs, string indicator, bool addIndicator) {
             //My strategy will take in the original timeseries as a parameter and return a List<TS> object
             //I can then set the IndicatorTSParameter as this timeseries object
-            if (originalTimeseries == null || originalTimeseries.Count <= 0) {
+            if (originalTs == null || originalTs.Count <= 0) {
                 return;
             }
 
-            TS openPxTS = originalTimeseries[0];
-            TS closePxTS = originalTimeseries[1];
+            TS openPxTS = originalTs[0];
+            TS closePxTS = originalTs[1];
 
             switch (indicator) {
                 case "Simple Moving Average":
                     //for now i will choose my own values for the n-day period
                     //This is not very optimised right now, will need to optimise
+                    TS sma20openPxTs = openPxTS.Sma(20);
+                    TS sma20closePxTs = closePxTS.Sma(20);
 
-                    if (!openPxTS.RemoveIndicator("Sma")) {
-                        TS sma20openPxTs = openPxTS.Sma(20);
+                    if (addIndicator) {
                         IndicatorTSParameter.Add(sma20openPxTs);
+                        IndicatorTSParameter.Add(sma20closePxTs);
+                    } else {
+                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(sma20openPxTs) || ts.Equals(sma20closePxTs));
                     }
 
-                    if (!closePxTS.RemoveIndicator("Sma")) {
-                        TS sma20closePxTs = closePxTS.Sma(20);
-                        IndicatorTSParameter.Add(sma20closePxTs);
-                    }
                     break;
                 case "Exponentially Weighted Moving Average":
-                    if (!openPxTS.RemoveIndicator("Ewma")) {
-                        TS ewma20openPxTs = openPxTS.Ewma(20);
+                    TS ewma20openPxTs = openPxTS.Ewma(20);
+                    TS ewma20closePxTs = closePxTS.Ewma(20);
+
+                    if (addIndicator) {
                         IndicatorTSParameter.Add(ewma20openPxTs);
-                    }
-                    
-                    if (!closePxTS.RemoveIndicator("Ewma")) {
-                        TS ewma20closePxTs = closePxTS.Ewma(20);
                         IndicatorTSParameter.Add(ewma20closePxTs);
+                    } else {
+                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(ewma20openPxTs) || ts.Equals(ewma20closePxTs));
                     }
-                    
+
+                    break;
+                case "Bollinger Bands":
+                    (TS, TS) bollingerBands = closePxTS.BollingerBands();
+
+                    if (addIndicator) {
+                        IndicatorTSParameter.Add(bollingerBands.Item1);
+                        IndicatorTSParameter.Add(bollingerBands.Item2);
+                    } else {
+                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(bollingerBands.Item1) || ts.Equals(bollingerBands.Item2));
+                    }
+
                     break;
                 default:
                     break;

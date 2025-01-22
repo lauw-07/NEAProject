@@ -1,5 +1,7 @@
 ﻿using Frontend.Models.Indicators;
 using Microsoft.AspNetCore.Server.HttpSys;
+using Newtonsoft.Json.Linq;
+using Syncfusion.Blazor.Charts.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,8 @@ namespace Frontend.Models.Timeseries {
         //Time series class
         protected List<DateTime> _timestamps = new List<DateTime>();
         protected List<double> _values = new List<double>();
-        private HashSet<string> _currentIndicators = new HashSet<string>();
-
+        private string _indicator = string.Empty;
+        
         //Constructor Overloading
         public TS() { }
 
@@ -80,6 +82,15 @@ namespace Frontend.Models.Timeseries {
             return _timestamps[_timestamps.Count - 1];
         }
 
+        public override bool Equals(object? obj) {
+            if (obj is TS other) {
+                return _indicator == other._indicator &&
+                       _timestamps.SequenceEqual(other._timestamps) &&
+                       _values.SequenceEqual(other._values);
+            }
+            return false;
+        }
+
         public bool IsEmpty() {
             return (_timestamps.Count == 0 || _values.Count == 0);
         }
@@ -96,10 +107,9 @@ namespace Frontend.Models.Timeseries {
             TS smaTs = CopyTs();
 
             for (int i = 1; i < _timestamps.Count; i++) {
-                smaTs._values.Add(sma.update(smaTs._values[i]));
+                smaTs._values[i] = sma.update(smaTs._values[i]);
             }
-
-            _currentIndicators.Add("Sma");
+            _indicator = "sma";
             return smaTs;
         }
 
@@ -112,15 +122,33 @@ namespace Frontend.Models.Timeseries {
             for (int i = 1; i < _timestamps.Count; i++) {
                 // Assuming that price data is daily
                 double dt = (_timestamps[i] - _timestamps[i - 1]).Days;
-                ewmaTs._values.Add(ewma.GetUpdate(dt, _values[i]));
+                ewmaTs._values[i] = ewma.GetUpdate(dt, _values[i]);
             }
-
-            _currentIndicators.Add("Ewma");
+            _indicator = "ewma";
             return ewmaTs;
         }
 
-        public bool RemoveIndicator(string indicator) {
+        /*public bool RemoveIndicator(string indicator) {
             return _currentIndicators.Remove(indicator);
+        }*/
+
+        public (TS, TS) BollingerBands() {
+            if (_values.Count == 0) return (new TS(), new TS());
+
+            BollingerBands bollingerBands = new BollingerBands(20);
+            TS upperBandTs = CopyTs();
+            TS lowerBandTs = CopyTs();
+
+            for (int i = 1; i < _timestamps.Count; i++) {
+                (double, double) bounds = bollingerBands.Update(_values[i]);
+                upperBandTs._values[i] = bounds.Item1;
+                lowerBandTs._values[i] = bounds.Item2;
+            }
+            return (upperBandTs, lowerBandTs);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(GetTimestamps(), GetValues());
         }
     }
 }
