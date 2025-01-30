@@ -14,7 +14,7 @@ namespace Frontend.Models.Timeseries {
         protected List<DateTime> _timestamps = new List<DateTime>();
         protected List<double> _values = new List<double>();
         private string _indicator = string.Empty;
-        
+
         //Constructor Overloading
         public TS() { }
 
@@ -96,7 +96,10 @@ namespace Frontend.Models.Timeseries {
         }
 
         public TS CopyTs() {
-            TS newTs = new TS(_timestamps, _values);
+            List<DateTime> timestamps = new List<DateTime>(_timestamps);
+            List<double> values = new List<double>(_values);
+
+            TS newTs = new TS(timestamps, values);
             return newTs;
         }
 
@@ -107,7 +110,7 @@ namespace Frontend.Models.Timeseries {
             TS smaTs = CopyTs();
 
             for (int i = 1; i < _timestamps.Count; i++) {
-                smaTs._values[i] = sma.update(smaTs._values[i]);
+                smaTs._values[i] = sma.Update(smaTs._values[i]);
             }
             _indicator = "sma";
             return smaTs;
@@ -131,6 +134,33 @@ namespace Frontend.Models.Timeseries {
         /*public bool RemoveIndicator(string indicator) {
             return _currentIndicators.Remove(indicator);
         }*/
+
+        public TS Ewvol(double halfLife) {
+            return Ewvol(halfLife, double.NaN, true);
+        }
+
+        // seedVol is used as the initial value to initialise the calculations
+        public TS Ewvol(double halfLife, double seedVol) {
+            return Ewvol(halfLife, seedVol, true);
+        }
+
+        public TS Ewvol(double halfLife, double seedVol, bool useMean) {
+            if (_values.Count == 0) return new TS();
+
+            Ewvol ewvol = new Ewvol(halfLife, double.IsNaN(seedVol) ? _values[0] : seedVol, useMean ? _values[0] : double.NaN);
+
+            TS ewvolTs = CopyTs();
+
+            double initialSeed = double.IsNaN(seedVol) ? (useMean ? 0 : _values[0]) : seedVol;
+
+            for (int i = 1; i  < _timestamps.Count; i++) {
+                // Assuming that price data is daily
+                double dt = (_timestamps[i] - _timestamps[i - 1]).Days;
+                ewvolTs._values[i] = ewvol.GetUpdate(dt, _values[i]);
+            }
+
+            return ewvolTs;
+        }
 
         public (TS, TS) BollingerBands() {
             if (_values.Count == 0) return (new TS(), new TS());

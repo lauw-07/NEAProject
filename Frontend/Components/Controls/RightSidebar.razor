@@ -1,0 +1,15 @@
+﻿<section id="rightSideBar" class="child">
+    <div class="indicators-title">
+        <p>Popular Strategies</p>
+    </div>
+
+    <div class="indicators">
+        @foreach (string indicator in _popularStrategies) {
+            <div class="indicator" @onclick="() => SelectStrategy(indicator)">@indicator</div>
+        }
+    </div>
+</section>
+
+@code {
+
+}

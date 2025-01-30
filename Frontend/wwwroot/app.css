@@ -48,7 +48,7 @@ html, body {
     margin: 0;
 }
 
-.entire-container {
+.app-container {
     display: flex;
     flex-direction: column;
     justify-content: center;

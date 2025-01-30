@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
-    public partial class GraphComponent {
+    public partial class Graph {
         [Parameter]
         public List<TS>? Timeseries { get; set; }
 

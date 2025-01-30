@@ -1,2 +1,110 @@
-﻿body {
+﻿#topBar {
+    display: flex;
+    flex-basis: 6%;
+    justify-content: space-between;
+    align-items: center;
+    color: rgb(0, 0, 0);
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    top: 0;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    z-index: 1000;
+    width: 100%;
+}
+
+.small-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    width: 30%;
+    height: 70%;
+}
+
+.instrumentList {
+    height: auto;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-menu {
+    position: relative;
+}
+
+    .dropdown-menu .select-btn {
+        display: flex;
+        padding: 20px;
+        font-size: 13px;
+        align-items: center;
+        cursor: pointer;
+        justify-content: space-between;
+        position: relative;
+    }
+
+
+        .dropdown-menu .select-btn::after {
+            content: '';
+            height: 4px;
+            width: 0%;
+            background: #E51047;
+            display: block;
+            position: absolute;
+            bottom: 10px;
+            left: 13px;
+        }
+
+
+        .dropdown-menu .select-btn:hover::after {
+            width: 60%;
+            transition: 0.5s;
+        }
+
+.selectBtn-text {
+    padding-right: 10px;
+    font-size: 13px;
+    color: black;
+}
+
+.select-btn .e-chevron-down {
+    font-size: 13px;
+    transition: 0.3s;
+    color: black;
+}
+
+.dropdown-menu:hover .select-btn .e-chevron-down {
+    color: red;
+    transform: rotate(-180deg);
+}
+
+.dropdown-menu .options {
+    position: absolute;
+    min-width: 100px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 10px #ccc;
+    display: none;
+}
+
+.dropdown-menu:hover .options {
+    display: block;
+}
+
+.options .option {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 9px;
+}
+
+    .options .option:hover {
+        background: #dbdbdb;
+    }
+
+.option .option-text {
+    font-size: 14px;
+    color: #000000;
 }

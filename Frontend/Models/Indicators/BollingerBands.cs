@@ -18,7 +18,7 @@
                 values.Dequeue();
             }
 
-            ma = sma.update(value);
+            ma = sma.Update(value);
 
             // calculate std
             // variance formula: sum of [ (x - x bar) ^ 2 ] / n

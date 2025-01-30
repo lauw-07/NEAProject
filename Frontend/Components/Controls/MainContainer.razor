@@ -1,14 +1,14 @@
 ﻿<div id="main-container">
-    <LeftSidebarComponent 
+    <LeftSidebar
         SelectIndicatorCallback="HandleIndicatorSelection"/>
 
-    <GraphContainerComponent 
+    <Graph 
         @rendermode="InteractiveServer"
         SelectedInstrument="@SelectedInstrument"
         SelectedIndicator="@selectedIndicator"
         SelectedSecurity="@SelectedSecurity"/>
 
-    <RightSidebarComponent />
+    <RightSidebar />
 </div>
 
 @code {

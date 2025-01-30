@@ -2,7 +2,7 @@
 using Frontend.Models.Database;
 
 namespace Frontend.Components.Controls {
-    public partial class TopbarComponent {
+    public partial class Topbar {
         private List<string> _instruments = new List<string>() {
             "Indices", "FX", "Cryptocurrency", "Stock", "Commodities", "Bonds and Rates"
         };
@@ -33,7 +33,7 @@ namespace Frontend.Components.Controls {
 
         private async Task GetAvailableSecurities(string instrumentType) {
             List<string> instrumentNames = new List<string>();
-            
+
             List<Instrument> instruments = await databaseHandler.GetInstrumentDataByTypeAsync(instrumentType);
             foreach (Instrument instrument in instruments) {
                 instrumentNames.Add(instrument.InstrumentName);

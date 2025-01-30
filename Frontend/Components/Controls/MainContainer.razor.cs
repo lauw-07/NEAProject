@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Components;
 
 namespace Frontend.Components.Controls {
-    public partial class MainContainerComponent {
+    public partial class MainContainer {
 
         [Parameter]
-        public string? SelectedInstrument {  get; set; }
+        public string? SelectedInstrument { get; set; }
 
         [Parameter]
         public string? SelectedSecurity { get; set; }

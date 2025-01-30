@@ -68,7 +68,7 @@
     -->
 
     @if (TimeseriesParameter != null && TimeseriesParameter.Any()) {
-        <GraphComponent 
+        <Graph
             Timeseries="@TimeseriesParameter" 
             IndicatorTS="@IndicatorTSParameter"
             @rendermode="InteractiveServer" />

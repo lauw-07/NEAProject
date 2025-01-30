@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
-    public partial class GraphContainerComponent {
+    public partial class GraphContainer {
 
         [Parameter]
         public string? SelectedInstrument { get; set; }
@@ -24,7 +24,7 @@ namespace Frontend.Components.Controls {
                 if (!_selectedIndicatorList.Contains(SelectedIndicator)) {
                     _selectedIndicatorList.Add(SelectedIndicator);
                     UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
-                } else { 
+                } else {
                     _selectedIndicatorList.Remove(SelectedIndicator);
                     UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
                 }
@@ -106,7 +106,7 @@ namespace Frontend.Components.Controls {
                     await databaseHandler.AddPriceDataAsync(symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
 
                     await databaseHandler.AddInstrumentDataAsync(symbol);
-                } catch (Exception ex) { 
+                } catch (Exception ex) {
                     Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
                 }
             }
@@ -181,6 +181,16 @@ namespace Frontend.Components.Controls {
                         IndicatorTSParameter.Add(bollingerBands.Item2);
                     } else {
                         IndicatorTSParameter.RemoveAll(ts => ts.Equals(bollingerBands.Item1) || ts.Equals(bollingerBands.Item2));
+                    }
+
+                    break;
+                case "Exponential Weighted Volatility":
+                    TS ewvolClosePxTs = closePxTS.Ewvol(20);
+
+                    if (addIndicator) {
+                        IndicatorTSParameter.Add(ewvolClosePxTs);
+                    } else {
+                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(ewvolClosePxTs));
                     }
 
                     break;

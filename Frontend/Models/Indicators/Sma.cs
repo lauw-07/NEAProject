@@ -12,7 +12,7 @@ namespace Frontend.Models.Indicators {
             WindowSize = windowSize;
         }
 
-        public double update(double value) {
+        public double Update(double value) {
             sum += value;
             window.Enqueue(value);
             if (window.Count > WindowSize) {

@@ -1,5 +1,5 @@
 ﻿namespace Frontend.Components.Controls {
-    public partial class EntireContainerComponent {
+    public partial class AppContainer {
         private string? selectedInstrument;
         private string? selectedSecurity;
         private void HandleInstrumentSelection(string instrument) {
