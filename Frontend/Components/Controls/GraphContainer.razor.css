@@ -1,0 +1,108 @@
+﻿#graph-container {
+    flex: 2;
+    max-width: calc(100% - (100% /8 + 100% /10));
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 80vh;
+    color: black;
+    font-size: 13px;
+}
+
+.graph-headers {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.dropdown-inputs {
+    position: relative;
+    width: fit-content;
+    padding-bottom: 15px;
+}
+
+    .dropdown-inputs .inputs {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        font-size: 13px;
+        width: fit-content;
+        border: none;
+        padding: 5px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 10px rgba(49, 49, 49, 0.3);
+        color: #000000;
+        background: #ffffff;
+        box-shadow: 0 0 10px #ccc;
+        z-index: 1000;
+        cursor: pointer;
+    }
+
+    .dropdown-inputs:hover .inputs {
+        display: flex;
+    }
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    transition: background 0.3s;
+}
+
+    .dropdown-toggle .e-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+.dropdown-inputs:hover .e-chevron-down {
+    color: red;
+    transform: rotate(-180deg);
+}
+
+.inputs .input-row {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+
+.input-row label {
+    flex-basis: 40%;
+    margin-right: 5px;
+}
+
+.input-row input {
+    flex-basis: 60%;
+}
+
+.inputs button {
+    margin-top: 10px;
+}
+
+.options {
+    min-width: 200px;
+}
+
+.option-text {
+    width: fit-content;
+    padding-left: 15px;
+}
+
+.option-text-title {
+    padding-bottom: 5px;
+    font-size: 14px;
+}
+
+.indicator-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

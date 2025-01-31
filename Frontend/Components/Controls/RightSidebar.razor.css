@@ -1,0 +1,4 @@
+﻿#rightSideBar {
+    flex: 1;
+    max-width: calc(100% / 8);
+}

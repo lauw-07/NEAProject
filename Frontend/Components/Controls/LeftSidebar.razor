@@ -10,10 +10,10 @@
     </div>
 
     <div class="popout-menu">
-        <a href="#">
+        <div class="popout-toggle">
             <span>See More</span>
             <span class="e-icons e-chevron-right"></span>
-        </a>
+        </div>
         <div class="menu-content">
             @foreach (string indicator in _extraTradingIndicators) {
                 <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>

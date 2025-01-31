@@ -1,0 +1,42 @@
+﻿#leftSideBar {
+    flex: 1;
+    max-width: calc(100% / 10);
+    height: 100%;
+}
+
+
+.indicators-title {
+    display: flex;
+    justify-content: center;
+}
+
+    .indicators-title p {
+        color: #000000;
+        text-decoration: underline;
+        text-decoration-color: #d97c11;
+        text-decoration-thickness: 3px;
+        padding-top: 5px;
+    }
+
+.indicators {
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    padding-top: 20px;
+}
+
+.indicator {
+    cursor: pointer;
+    display: flex;
+    padding: 5px;
+    font-size: 13px;
+    width: 100%;
+    color: black;
+}
+
+    .indicator:hover {
+        background: #dbdbdb;
+    }
+
+
+

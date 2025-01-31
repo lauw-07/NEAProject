@@ -48,77 +48,101 @@ html, body {
     margin: 0;
 }
 
-.app-container {
+.popout-menu {
+    position: relative;
+    padding-top: 15px;
+    width: fit-content;
+    padding-right: 15px;
+}
+
+    .popout-menu span {
+        padding: 5px;
+        color: black;
+        font-size: 13px;
+    }
+
+    .popout-menu:hover .e-chevron-right {
+        color: red;
+        transform: rotate(180deg);
+    }
+
+
+.popout-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    transition: background 0.3s;
+}
+
+    .popout-toggle .e-chevron-right {
+        font-size: 13px;
+        transition: transform 0.3s ease;
+    }
+
+   
+.menu-content {
+    display: none;
+    position: absolute;
+    top: 34%;
+    left: 100%;
+    padding: 5px;
+    font-size: 13px;
+    min-width: 175px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(49, 49, 49, 0.3);
+    color: #000000;
+    background: #ffffff;
+    box-shadow: 0 0 10px #ccc;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.popout-menu:hover .menu-content {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    gap: 5px;
+}
+
+#main-container .child {
+    border: 2px solid #000000;
+    border-radius: 5px;
     height: 100%;
-}
-
-/*Topbar css*/
-
-#topBar {
-    display: flex;
-    flex-basis: 6%;
-    justify-content: space-between;
-    align-items: center;
-    color: rgb(0, 0, 0);
-    padding: 10px 20px;
-    margin-bottom: 20px;
-    top: 0;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    z-index: 1000;
-    width: 100%;
-}
-
-.small-container {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    width: 30%;
-    height: 70%;
-}
-
-.instrumentList {
-    height: auto;
-    display: flex;
-    align-items: center;
 }
 
 .dropdown-menu {
     position: relative;
 }
 
-.dropdown-menu .select-btn {
-    display: flex;
-    padding: 20px;
-    font-size: 13px;
-    align-items: center;
-    cursor: pointer;
-    justify-content: space-between;
-    position: relative;
-}
-
-
-    .dropdown-menu .select-btn::after {
-        content: '';
-        height: 4px;
-        width: 0%;
-        background: #E51047;
-        display: block;
-        position: absolute;
-        bottom: 10px;
-        left: 13px;
+    .dropdown-menu .select-btn {
+        display: flex;
+        padding: 20px;
+        font-size: 13px;
+        align-items: center;
+        cursor: pointer;
+        justify-content: space-between;
+        position: relative;
     }
 
 
-    .dropdown-menu .select-btn:hover::after {
-        width: 60%;
-        transition: 0.5s;
-    }
+        .dropdown-menu .select-btn::after {
+            content: '';
+            height: 4px;
+            width: 0%;
+            background: #E51047;
+            display: block;
+            position: absolute;
+            bottom: 10px;
+            left: 13px;
+        }
+
+
+        .dropdown-menu .select-btn:hover::after {
+            width: 60%;
+            transition: 0.5s;
+        }
 
 .selectBtn-text {
     padding-right: 10px;
@@ -166,241 +190,4 @@ html, body {
 .option .option-text {
     font-size: 14px;
     color: #000000;
-}
-
-/*Main Container css*/
-
-#main-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    gap: 10px;
-    align-items: center;
-    border: 2px solid #000000;
-    border-radius: 5px;
-}
-
-.child {
-    border: 2px solid #000000;
-    border-radius: 5px;
-    height: 100%;
-}
-
-
-/*Main Container Children css*/
-
-#leftSideBar {
-    flex: 1;
-    max-width: calc(100% / 10);
-    height: 100%;
-}
-
-#rightSideBar {
-    flex: 1;
-    max-width: calc(100% / 8);
-}
-
-#graph-container {
-    flex: 2;
-    max-width: calc(100% - (100% /8 + 100% /10));
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 80vh;
-    color: black;
-    font-size: 14px;
-}
-
-
-/*Left sidebar css*/
-.indicators-title {
-    display: flex;
-    justify-content: center;
-}
-
-    .indicators-title p {
-        color: #000000;
-        text-decoration: underline;
-        text-decoration-color: #d97c11;
-        text-decoration-thickness: 3px;
-        padding-top: 5px;
-    }
-
-.indicators {
-    display: flex;
-    flex-direction: column;
-    left: 0;
-    padding-top: 20px;
-}
-
-.indicator {
-    cursor: pointer;
-    display: flex;
-    padding: 5px;
-    font-size: 13px;
-    width: 100%;
-    color: black;
-}
-
-    .indicator:hover {
-        background: #dbdbdb;
-    }
-
-
-.popout-menu {
-    position: relative;
-    padding-top: 15px;
-    width: fit-content;
-    padding-right: 15px;
-}
-
-    .popout-menu a {
-        text-decoration: none;
-        color: black;
-        font-weight: 500;
-    }
-
-    .popout-menu .fa-chevron-right {
-        font-size: 13px;
-        transition: 0.3s;
-    }
-
-    .popout-menu span {
-        padding: 5px;
-        font-size: 13px;
-    }
-
-    .popout-menu:hover .e-chevron-right {
-        transform: rotate(180deg);
-    }
-
-.menu-content {
-    display: none;
-    position: absolute;
-    top: 34%;
-    left: 100%;
-    padding: 5px;
-    font-size: 13px;
-    min-width: 175px;
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(49, 49, 49, 0.3);
-    color: #000000;
-    background: #ffffff;
-    box-shadow: 0 0 10px #ccc;
-    z-index: 1000;
-    cursor: pointer;
-}
-
-.popout-menu:hover .menu-content {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-
-/*Graph css*/
-#graph-container .graph-headers {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
-}
-
-#graph-container .dropdown-inputs {
-    position: relative;
-    width: fit-content;
-    padding-bottom: 15px;
-}
-
-    #graph-container .dropdown-inputs .e-chevron-down {
-        font-size: 13px;
-        transition: 0.3s;
-    }
-
-    #graph-container .dropdown-inputs:hover .e-chevron-down {
-        transform: rotate(-180deg);
-    }
-
-    #graph-container .dropdown-inputs a {
-        text-decoration: none;
-        color: black;
-        font-size: 13px;
-    }
-
-    #graph-container .dropdown-inputs .inputs {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        font-size: 13px;
-        width: fit-content;
-        border: none;
-        padding: 5px;
-        border-radius: 8px;
-        box-shadow: 0px 2px 10px rgba(49, 49, 49, 0.3);
-        color: #000000;
-        background: #ffffff;
-        box-shadow: 0 0 10px #ccc;
-        z-index: 1000;
-        cursor: pointer;
-    }
-
-    #graph-container .dropdown-inputs:hover .inputs {
-        display: flex;
-    }
-
-.inputs .input-row {
-    display: flex;
-    align-items: center;
-    margin-top: 10px;
-}
-
-
-.input-row label {
-    flex-basis: 40%;
-    margin-right: 5px;
-}
-
-.input-row input {
-    flex-basis: 60%;
-}
-
-.inputs button {
-    margin-top: 10px;
-}
-
-#graph-container .options {
-    min-width: 200px;
-}
-
-#graph-container .option-text {
-    width: fit-content;
-    padding-left: 15px;
-}
-
-.option-text-title {
-    padding-bottom: 5px;
-    font-size: 14px;
-}
-
-.indicator-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-}
-
-#graph {
-    color: black;
-    width: 100%;
-    height: 100%;
-    /*width: 100%;
-    height: 100%;*/
-    position: relative;
-    overflow: hidden;
 }
