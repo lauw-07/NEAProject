@@ -21,5 +21,13 @@ namespace Frontend.Models.Database {
             InstrumentCurrency = instrumentCurrency;
         }
 
+        public double GetUnitExposure(double price) {
+            switch (InstrumentType) {
+                case "Stock":
+                    return 1 * price;
+                default:
+                    return double.NaN;
+            }
+        }
     }
 }
