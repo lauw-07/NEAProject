@@ -1,30 +1,36 @@
 ﻿using Frontend.Models.Timeseries;
+using Syncfusion.Blazor.Charts.Internal;
 
 namespace Frontend.Models.Indicators {
-    public class Sma {
+    public class Sma : IndicatorBase {
         private Queue<double> window = new Queue<double>();
         private double sum = 0;
         private double currentMa = double.NaN;
 
-        public int WindowSize { get; set; }
+        private int WindowSize { get; set; }
 
-        public Sma(int windowSize) {
+        public Sma(int windowSize) : base() {
             WindowSize = windowSize;
+            _name = "Simple Moving Average";
         }
 
-        public double Update(double value) {
+        public override T Update<T>(double value) {
             sum += value;
             window.Enqueue(value);
             if (window.Count > WindowSize) {
                 sum -= window.Dequeue();
             }
             currentMa = sum / window.Count;
-            return currentMa;
+            return (T)(object)currentMa;
         }
 
         //extra functionalities if required
         public double GetMa() {
             return currentMa;
+        }
+
+        public int GetWindowSize() {
+            return WindowSize;
         }
 
         public void Clear() {

@@ -1,8 +1,9 @@
 ﻿using Frontend.Models.Timeseries;
+using Syncfusion.Blazor.Charts.Internal;
 using System.Diagnostics.Eventing.Reader;
 
 namespace Frontend.Models.Indicators {
-    public class Ewma {
+    public class Ewma : IndicatorBase {
 
         //initialise values with their default values
         protected double currentMa = double.NaN;
@@ -11,13 +12,14 @@ namespace Frontend.Models.Indicators {
 
         public double HalfLife { get; set; }
         public double Seed { get; set; } // the seed is the first value of the timeseries that we are working with
-        public Ewma(double halfLife, double seed) {
+        public Ewma(double halfLife, double seed) : base() {
             HalfLife = halfLife;
             unitDecay = Math.Pow(2, -1 / halfLife);
             currentMa = seed;
+            _name = "Exponentially Weighted Moving Average";
         }
 
-        public virtual void Update(double dt, double value) {
+        public override void Update(double dt, double value) {
             // ensure that the decay is scaled based on dt
             decay = Math.Pow(unitDecay, dt);
 
@@ -25,7 +27,7 @@ namespace Frontend.Models.Indicators {
             currentMa = decay * currentMa + (1 - decay) * value;
         }
 
-        public virtual void Update(TS values) {
+        public override void Update(TS values) {
             if (values == null || values.Size() == 0) return;
 
             DateTime prevTime;
