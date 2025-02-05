@@ -7,3 +7,15 @@
     position: relative;
     overflow: hidden;
 }
+
+
+.tooltip {
+    position: absolute;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    display: none;
+    pointer-events: none;
+}

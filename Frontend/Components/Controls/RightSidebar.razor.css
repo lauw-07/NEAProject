@@ -2,3 +2,9 @@
     flex: 1;
     max-width: calc(100% / 8);
 }
+
+.strategy-menu-content {
+    top: 100%;
+    left: 0;
+    right: 100%;
+}

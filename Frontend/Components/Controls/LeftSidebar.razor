@@ -14,7 +14,7 @@
             <span>See More</span>
             <span class="e-icons e-chevron-right"></span>
         </div>
-        <div class="menu-content">
+        <div class="menu-content ">
             @foreach (string indicator in _extraTradingIndicators) {
                 <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>
             }

@@ -1,24 +1,29 @@
-﻿namespace Frontend.Models.Indicators {
-    public class BollingerBands {
-        private readonly Sma sma;
+﻿using Syncfusion.Blazor.Charts.Internal;
+
+namespace Frontend.Models.Indicators {
+    public class BollingerBands : IndicatorBase {
+        private readonly Sma reference;
         private double ma = double.NaN;
         private Queue<double> values = new Queue<double>();
-        private int _windowSize = 0;
         private double _upperBand = double.NaN;
         private double _lowerBand = double.NaN;
 
-        public BollingerBands(int windowSize) {
-            sma = new Sma(windowSize);
-            _windowSize = windowSize;
+        private double width;
+
+        public BollingerBands(int windowSize, double width) : base() {
+            reference = new Sma(windowSize);
+            this.width = width;
+
+            _name = "Bollinger Bands";
         }
 
-        public (double, double) Update(double value) {
+        public override T Update<T>(double value) {
             values.Enqueue(value);
-            if (values.Count > _windowSize) {
+            if (values.Count > reference.GetWindowSize()) {
                 values.Dequeue();
             }
 
-            ma = sma.Update(value);
+            ma = reference.Update<double>(value);
 
             // calculate std
             // variance formula: sum of [ (x - x bar) ^ 2 ] / n
@@ -30,13 +35,25 @@
                 }
 
                 variance = sum / values.Count;
-                
+
                 double std = Math.Sqrt(variance);
 
-                _upperBand = ma + 2 * std;
-                _lowerBand = ma - 2 * std;
+                _upperBand = ma + width * std;
+                _lowerBand = ma - width * std;
             }
-            return (_upperBand, _lowerBand);
+            return (T)(object)(_upperBand, _lowerBand);
+        }
+
+        public double GetReference() {
+            return reference.GetMa();
+        }
+
+        public double GetUpperBand() {
+            return _upperBand;
+        }
+
+        public double GetLowerBand() {
+            return _lowerBand;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Frontend.Models.Indicators {
         public Ewvol(double halfLife, double seedVol, double seedMa) : base(halfLife, seedMa) {
             useMean = !double.IsNaN(seedMa);
             vv = Math.Pow(seedVol, 2);
+            _name = "Exponential Weighted Volatility";
         }
 
         public override void Update(double dt, double value) {

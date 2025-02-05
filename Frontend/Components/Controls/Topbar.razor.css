@@ -29,4 +29,10 @@
     align-items: center;
 }
 
+.topbar-menu {
+    width: 100%;
+}
 
+.topbar-menu-content {
+    top: 0;
+}

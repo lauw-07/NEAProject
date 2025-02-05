@@ -11,6 +11,18 @@
                 I can create a Razor component for this dropdown menu
 
                 Maybe add a pop up notification for the instruments which i have not got data for
+            
+            <div class="popout-menu">
+                <div class="popout-toggle">
+                    <span>See More</span>
+                    <span class="e-icons e-chevron-right"></span>
+                </div>
+                <div class="menu-content">
+                    @foreach (string indicator in _extraTradingIndicators) {
+                        <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>
+                    }
+                </div>
+            </div>
             -->
 
             <div class="dropdown-menu">
@@ -21,11 +33,11 @@
                 <div class="options">
                     @foreach (var instrument in _instruments) {
                         <div class="option" @onmouseover="() => SelectInstrument(instrument)">
-                            <div class="popout-menu">
+                            <div class="popout-menu topbar-menu">
                                 <a href="#">
                                     <span class="option-text">@instrument</span>
                                 </a>
-                                <div class="menu-content">
+                                <div class="menu-content topbar-menu-content">
                                     @foreach (string security in _availableSecurities) {
                                         <div class="indicator" @onclick="() => SelectSecurity(security)">@security</div>
                                         //the class "indicator" is a bit too specific, maybe look and try change all occurences to something more generic

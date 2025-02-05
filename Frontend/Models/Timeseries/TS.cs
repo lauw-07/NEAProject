@@ -42,6 +42,9 @@ namespace Frontend.Models.Timeseries {
         }
 
         public TS(List<DateTime> timestamps, List<double> values) {
+            if (timestamps.Count != values.Count)
+                return;
+
             _timestamps = timestamps;
             _values = values;
         }
@@ -96,11 +99,7 @@ namespace Frontend.Models.Timeseries {
         }
 
         public TS CopyTs() {
-            List<DateTime> timestamps = new List<DateTime>(_timestamps);
-            List<double> values = new List<double>(_values);
-
-            TS newTs = new TS(timestamps, values);
-            return newTs;
+            return new TS(this);
         }
 
         public TS Sma(int n) {
@@ -109,8 +108,8 @@ namespace Frontend.Models.Timeseries {
             Sma sma = new Sma(n);
             TS smaTs = CopyTs();
 
-            for (int i = 1; i < _timestamps.Count; i++) {
-                smaTs._values[i] = sma.Update(smaTs._values[i]);
+            for (int i = 0; i < _timestamps.Count; i++) {
+                smaTs._values[i] = sma.Update<double>(smaTs._values[i]);
             }
             _indicator = "sma";
             return smaTs;
@@ -153,7 +152,7 @@ namespace Frontend.Models.Timeseries {
 
             double initialSeed = double.IsNaN(seedVol) ? (useMean ? 0 : _values[0]) : seedVol;
 
-            for (int i = 1; i  < _timestamps.Count; i++) {
+            for (int i = 1; i < _timestamps.Count; i++) {
                 // Assuming that price data is daily
                 double dt = (_timestamps[i] - _timestamps[i - 1]).Days;
                 ewvolTs._values[i] = ewvol.GetUpdate(dt, _values[i]);
@@ -162,15 +161,15 @@ namespace Frontend.Models.Timeseries {
             return ewvolTs;
         }
 
-        public (TS, TS) BollingerBands() {
+        public (TS, TS) BollingerBands(int windowSize, double width) {
             if (_values.Count == 0) return (new TS(), new TS());
 
-            BollingerBands bollingerBands = new BollingerBands(20);
+            BollingerBands bollingerBands = new BollingerBands(windowSize, width);
             TS upperBandTs = CopyTs();
             TS lowerBandTs = CopyTs();
 
-            for (int i = 1; i < _timestamps.Count; i++) {
-                (double, double) bounds = bollingerBands.Update(_values[i]);
+            for (int i = 0; i < _timestamps.Count; i++) {
+                (double, double) bounds = bollingerBands.Update<(double, double)>(_values[i]);
                 upperBandTs._values[i] = bounds.Item1;
                 lowerBandTs._values[i] = bounds.Item2;
             }

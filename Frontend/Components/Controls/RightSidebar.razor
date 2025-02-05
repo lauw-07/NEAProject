@@ -1,13 +1,28 @@
-﻿<section id="rightSideBar" class="child">
-    <!--<div class="indicators-title">
-        <p>Popular Strategies</p>
+﻿@inject NavigationManager navigationManager
+
+<section id="rightSideBar" class="child">
+    <div class="indicators-title">
+        <p>Strategies</p>
     </div>
 
     <div class="indicators">
-        @foreach (string indicator in _popularStrategies) {
-            <div class="indicator" @onclick="() => SelectStrategy(indicator)">@indicator</div>
+        @foreach (string strategy in _mostUsedStrats)
+        {
+            <div class="indicator" @onclick="() => SelectStrategy(strategy)">@strategy</div>
         }
-    </div>-->
+    </div>
+
+    <div class="popout-menu">
+        <div class="popout-toggle">
+            <span>See More</span>
+            <span class="e-icons e-chevron-right"></span>
+        </div>
+        <div class="menu-content strategy-menu-content">
+            @foreach (string strategy in _extraStrats) {
+                <div class="indicator" @onclick="() => SelectStrategy(strategy)">@strategy</div>
+            }
+        </div>
+    </div>
 </section>
 
 @code {
