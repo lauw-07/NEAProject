@@ -54,8 +54,7 @@
                     <span class="option-text-title">Indicators:</span>
                     <div class="indicator-list">
                         @foreach (string indicator in _selectedIndicatorList) {
-
-                            <span class="option-text">@indicator</span>
+                            <span class="option-text" @onclick="() => ToggleIndicator(indicator)">@indicator</span>
                         }
                     </div>
                 </div>

@@ -1,6 +1,8 @@
 ﻿@page "/PnlGraph/{Strategy}"
 
+<PnlGraphContainer Strategy="@Strategy"/>
+
 @code {
     [Parameter]
-    public string Strategy { get; set; }
+    public string? Strategy { get; set; }
 }

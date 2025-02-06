@@ -19,19 +19,19 @@ namespace Frontend.Components.Controls {
 
         List<string> _selectedIndicatorList = new List<string>();
 
-        protected override void OnParametersSet() {
+        /*protected override void OnParametersSet() {
             if (SelectedIndicator != null && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
-                if (!_selectedIndicatorList.Contains(SelectedIndicator)) {
-                    _selectedIndicatorList.Add(SelectedIndicator);
-                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
-                } else {
+                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
                     _selectedIndicatorList.Remove(SelectedIndicator);
                     UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
+                } else {
+                    _selectedIndicatorList.Add(SelectedIndicator);
+                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
                 }
 
                 StateHasChanged();
             }
-        }
+        }*/
 
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }
@@ -42,36 +42,32 @@ namespace Frontend.Components.Controls {
         private PolygonStockPriceData? polygonStockPriceData;
         private string symbol = string.Empty;
         private List<Result>? results;
+        private List<TS> _localTimeseries = new();
+        private Dictionary<string, List<TS>> _indicatorCache = new();
 
         private List<TS> TimeseriesParameter = new(); //Parameter to pass on to GraphComponent
         private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
-            Console.WriteLine("OnAfterRenderAsync triggered in GraphContainer component");
-
             if (firstRender) {
-                Console.WriteLine("Fetching intial data from database");
+                Console.WriteLine("Fetching initial data from database");
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
-                Console.WriteLine($"Symbol: {symbol}");
-                TimeseriesParameter = await ReadFromDatabase();
-                Console.WriteLine(TimeseriesParameter);
-
-                StateHasChanged();
-            } else {
-                Console.WriteLine("Fetching new data from database");
-                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
-                Console.WriteLine($"Ticker: {symbol}");
-                TimeseriesParameter = await ReadFromDatabase();
-                Console.WriteLine(TimeseriesParameter);
-
-                StateHasChanged();
+                TimeseriesParameter = await GetLocalTS();
+                StateHasChanged(); // Only needed if data actually changes
             }
         }
 
         private async Task FetchData() {
             await LoadData();
             await SaveToDatabase();
-            TimeseriesParameter = await ReadFromDatabase();
+            TimeseriesParameter = await GetLocalTS();
+        }
+
+        private async Task<List<TS>> GetLocalTS() {
+            if (_localTimeseries == null) {
+                _localTimeseries = await ReadFromDatabase();
+            }
+            return _localTimeseries;
         }
 
         private async Task LoadData() {
@@ -136,67 +132,52 @@ namespace Frontend.Components.Controls {
             return new List<TS> { openPxTimeseries, closePxTimeseries };
         }
 
-        private void UpdateIndicatorTs(List<TS> originalTs, string indicator, bool addIndicator) {
-            //My strategy will take in the original timeseries as a parameter and return a List<TS> object
-            //I can then set the IndicatorTSParameter as this timeseries object
-            if (originalTs == null || originalTs.Count <= 0) {
-                return;
-            }
+        
 
+        private void UpdateIndicatorTs(List<TS> originalTs, string indicator, bool addIndicator) {
+            if (originalTs == null || originalTs.Count == 0) return;
+
+            if (addIndicator) {
+                if (!_indicatorCache.ContainsKey(indicator)) {
+                    _indicatorCache[indicator] = GenerateIndicatorTS(originalTs, indicator);
+                }
+                IndicatorTSParameter.AddRange(_indicatorCache[indicator]);
+            } else {
+                if (_indicatorCache.ContainsKey(indicator)) {
+                    IndicatorTSParameter.RemoveAll(ts => _indicatorCache[indicator].Contains(ts));
+                }
+            }
+        }
+
+        private List<TS> GenerateIndicatorTS(List<TS> originalTs, string indicator) {
             TS openPxTS = originalTs[0];
             TS closePxTS = originalTs[1];
 
             switch (indicator) {
                 case "Simple Moving Average":
-                    //for now i will choose my own values for the n-day period
-                    //This is not very optimised right now, will need to optimise
-                    TS sma20openPxTs = openPxTS.Sma(20);
-                    TS sma20closePxTs = closePxTS.Sma(20);
-
-                    if (addIndicator) {
-                        IndicatorTSParameter.Add(sma20openPxTs);
-                        IndicatorTSParameter.Add(sma20closePxTs);
-                    } else {
-                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(sma20openPxTs) || ts.Equals(sma20closePxTs));
-                    }
-
-                    break;
+                    return new List<TS> { openPxTS.Sma(20), closePxTS.Sma(20) };
                 case "Exponentially Weighted Moving Average":
-                    TS ewma20openPxTs = openPxTS.Ewma(20);
-                    TS ewma20closePxTs = closePxTS.Ewma(20);
-
-                    if (addIndicator) {
-                        IndicatorTSParameter.Add(ewma20openPxTs);
-                        IndicatorTSParameter.Add(ewma20closePxTs);
-                    } else {
-                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(ewma20openPxTs) || ts.Equals(ewma20closePxTs));
-                    }
-
-                    break;
+                    return new List<TS> { openPxTS.Ewma(20), closePxTS.Ewma(20) };
                 case "Bollinger Bands":
-                    (TS, TS) bollingerBands = closePxTS.BollingerBands();
-
-                    if (addIndicator) {
-                        IndicatorTSParameter.Add(bollingerBands.Item1);
-                        IndicatorTSParameter.Add(bollingerBands.Item2);
-                    } else {
-                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(bollingerBands.Item1) || ts.Equals(bollingerBands.Item2));
-                    }
-
-                    break;
+                    (TS,TS) bollingerBands = closePxTS.BollingerBands(20, 2);
+                    return new List<TS> { bollingerBands.Item1, bollingerBands.Item2 };
                 case "Exponential Weighted Volatility":
-                    TS ewvolClosePxTs = closePxTS.Ewvol(20);
-
-                    if (addIndicator) {
-                        IndicatorTSParameter.Add(ewvolClosePxTs);
-                    } else {
-                        IndicatorTSParameter.RemoveAll(ts => ts.Equals(ewvolClosePxTs));
-                    }
-
-                    break;
+                    return new List<TS> { closePxTS.Ewvol(20) };
                 default:
-                    break;
+                    return new List<TS>();
             }
+        }
+
+        private void ToggleIndicator(string indicator) {
+            if (_selectedIndicatorList.Contains(indicator)) {
+                _selectedIndicatorList.Remove(indicator);
+                UpdateIndicatorTs(TimeseriesParameter, indicator, false);
+            } else {
+                _selectedIndicatorList.Add(indicator);
+                UpdateIndicatorTs(TimeseriesParameter, indicator, true);
+            }
+
+            StateHasChanged(); // Ensure UI updates
         }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
