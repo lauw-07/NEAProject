@@ -19,8 +19,8 @@ namespace Frontend.Components.Controls {
 
         List<string> _selectedIndicatorList = new List<string>();
 
-        /*protected override void OnParametersSet() {
-            if (SelectedIndicator != null && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
+        protected override void OnParametersSet() {
+            if (!string.IsNullOrEmpty(SelectedIndicator) && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
                 if (_selectedIndicatorList.Contains(SelectedIndicator)) {
                     _selectedIndicatorList.Remove(SelectedIndicator);
                     UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
@@ -31,7 +31,7 @@ namespace Frontend.Components.Controls {
 
                 StateHasChanged();
             }
-        }*/
+        }
 
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }
@@ -45,7 +45,7 @@ namespace Frontend.Components.Controls {
         private List<TS> _localTimeseries = new();
         private Dictionary<string, List<TS>> _indicatorCache = new();
 
-        private List<TS> TimeseriesParameter = new(); //Parameter to pass on to GraphComponent
+        private List<TS> TimeseriesParameter = new(); //Parameters to pass on to GraphComponent
         private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
@@ -53,7 +53,12 @@ namespace Frontend.Components.Controls {
                 Console.WriteLine("Fetching initial data from database");
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
                 TimeseriesParameter = await GetLocalTS();
-                StateHasChanged(); // Only needed if data actually changes
+                
+                if (TimeseriesParameter == null || TimeseriesParameter.Count == 0) {
+                    Console.WriteLine("Timeseries is empty");
+                }
+
+                StateHasChanged();
             }
         }
 
@@ -64,7 +69,7 @@ namespace Frontend.Components.Controls {
         }
 
         private async Task<List<TS>> GetLocalTS() {
-            if (_localTimeseries == null) {
+            if (_localTimeseries == null || _localTimeseries.Count == 0) {
                 _localTimeseries = await ReadFromDatabase();
             }
             return _localTimeseries;
@@ -107,7 +112,6 @@ namespace Frontend.Components.Controls {
                 }
             }
         }
-
 
         private async Task<List<TS>> ReadFromDatabase() {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
@@ -168,17 +172,6 @@ namespace Frontend.Components.Controls {
             }
         }
 
-        private void ToggleIndicator(string indicator) {
-            if (_selectedIndicatorList.Contains(indicator)) {
-                _selectedIndicatorList.Remove(indicator);
-                UpdateIndicatorTs(TimeseriesParameter, indicator, false);
-            } else {
-                _selectedIndicatorList.Add(indicator);
-                UpdateIndicatorTs(TimeseriesParameter, indicator, true);
-            }
-
-            StateHasChanged(); // Ensure UI updates
-        }
 
         /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
          * Read all the data relating to the specific Ticker passed in from the input from the database
