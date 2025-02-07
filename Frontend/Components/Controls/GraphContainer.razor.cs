@@ -17,7 +17,7 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedIndicator { get; set; }
 
-        List<string> _selectedIndicatorList = new List<string>();
+        private List<string> _selectedIndicatorList = new List<string>();
 
         protected override void OnParametersSet() {
             if (!string.IsNullOrEmpty(SelectedIndicator) && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {

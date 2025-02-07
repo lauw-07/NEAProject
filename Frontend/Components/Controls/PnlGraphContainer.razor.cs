@@ -9,15 +9,13 @@ namespace Frontend.Components.Controls {
 
         private Dictionary<string, string> _selectedParams = new();
 
-        protected override void OnInitialized() {
-            foreach (string param in _strategyParameters) {
-                _selectedParams[param] = "";
-            }
-        }
-
         protected override void OnParametersSet() {
             if (Strategy != null) {
                 _strategyParameters = GetBacktestParams(Strategy);
+
+                foreach (string param in _strategyParameters) {
+                    _selectedParams[param] = "";
+                }
             }
         }
 
@@ -28,6 +26,7 @@ namespace Frontend.Components.Controls {
         }
 
         private List<string> GetStrategyParameters(string param) {
+            // This is just for testing purposes, realistically i will not be just using the bollinger breakout strategy so these params will be different
             switch (param) {
                 case "Window Size":
                     return new List<string>() { "10", "20", "30", "40", "50" };
