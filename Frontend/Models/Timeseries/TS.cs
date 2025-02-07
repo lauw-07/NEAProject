@@ -98,6 +98,11 @@ namespace Frontend.Models.Timeseries {
             return (_timestamps.Count == 0 || _values.Count == 0);
         }
 
+        public void Clear() {
+            _timestamps.Clear();
+            _values.Clear();
+        }
+
         public TS CopyTs() {
             return new TS(this);
         }

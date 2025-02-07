@@ -19,14 +19,20 @@ namespace Frontend.Components.Controls {
 
         private List<string> _selectedIndicatorList = new List<string>();
 
+        private string? _previousIndicator;
+
         protected override void OnParametersSet() {
-            if (!string.IsNullOrEmpty(SelectedIndicator) && TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
-                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
-                    _selectedIndicatorList.Remove(SelectedIndicator);
-                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
-                } else {
-                    _selectedIndicatorList.Add(SelectedIndicator);
-                    UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
+            if (!string.IsNullOrEmpty(SelectedIndicator) && SelectedIndicator != _previousIndicator) {
+                _previousIndicator = SelectedIndicator;
+
+                if (TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
+                    if (_selectedIndicatorList.Contains(SelectedIndicator)) {
+                        _selectedIndicatorList.Remove(SelectedIndicator);
+                        UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
+                    } else {
+                        _selectedIndicatorList.Add(SelectedIndicator);
+                        UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
+                    }
                 }
 
                 StateHasChanged();

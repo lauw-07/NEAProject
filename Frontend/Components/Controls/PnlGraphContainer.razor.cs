@@ -28,6 +28,8 @@ namespace Frontend.Components.Controls {
         private List<string> GetStrategyParameters(string param) {
             // This is just for testing purposes, realistically i will not be just using the bollinger breakout strategy so these params will be different
             switch (param) {
+                case "Ticker":
+                    return new List<string>() { "AAPL", "MSFT", "NVDA", "AMZN", "TSLA" };
                 case "Window Size":
                     return new List<string>() { "10", "20", "30", "40", "50" };
                 case "Width":
@@ -46,7 +48,7 @@ namespace Frontend.Components.Controls {
         private List<string> GetBacktestParams(string strategy) {
             switch (Strategy) {
                 case "Bollinger Bands Breakout":
-                    return new List<string>() { "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type"};
+                    return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type"};
                 default:
                     return new List<string>();
             }

@@ -18,6 +18,13 @@ namespace Frontend.Models.Backtest.Breakout {
             _inputs.Add(key, value);
         }
 
+        public void AddInputs(Dictionary<string, object> inputs) {
+            foreach (KeyValuePair<string, object> pair in inputs) {
+                if (!_inputs.ContainsKey(pair.Key))
+                    _inputs.Add(pair.Key, pair.Value);
+            }
+        }
+
         public double GetClosePrice() {
             return (double)_inputs[BaseStrategyFields.ClosePrice.ToString()];
         }

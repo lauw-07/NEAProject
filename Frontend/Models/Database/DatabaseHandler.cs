@@ -15,9 +15,8 @@ namespace Frontend.Models.Database {
         public DatabaseHandler(string connectionString) {
             _connectionString = connectionString;
         }
-        public async Task<List<Instrument>> GetInstrumentDataAsync(string symbol) {
-            List<Instrument> instruments = new List<Instrument>();
-
+        public async Task<Instrument> GetInstrumentDataAsync(string symbol) {
+            Instrument? instrument = null;
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
 
@@ -27,18 +26,17 @@ namespace Frontend.Models.Database {
 
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
-                        var instrument = new Instrument(
+                        instrument = new Instrument(
                             reader.GetInt32(reader.GetOrdinal("InstrumentID")),
                             reader.GetString(reader.GetOrdinal("InstrumentName")),
                             reader.GetString(reader.GetOrdinal("InstrumentSymbol")),
                             reader.GetString(reader.GetOrdinal("InstrumentType")),
                             reader.GetString(reader.GetOrdinal("InstrumentCurrency"))
                         );
-                        instruments.Add(instrument);
                     }
                 }
             }
-            return instruments;
+            return instrument;
         }
 
         public async Task<string> GetInstrumentByIDAsync(int id) {
@@ -92,8 +90,7 @@ namespace Frontend.Models.Database {
                 cmd.Parameters.AddWithValue("@instrumentType", instrumentType);
 
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
-                    while (await reader.ReadAsync())
-                    {
+                    while (await reader.ReadAsync()) {
                         var instrument = new Instrument(
                             reader.GetInt32(reader.GetOrdinal("InstrumentID")),
                             reader.GetString(reader.GetOrdinal("InstrumentName")),
@@ -113,7 +110,7 @@ namespace Frontend.Models.Database {
                 await connection.OpenAsync();
 
                 //MUST CHECK THAT DATABASE DOES NOT ALREADY CONTAIN DATA BEING INSERTED (NOT TOO HARD THOUGH)
-                string query = "INSERT INTO Instruments (InstrumentName,InstrumentSymbol,InstrumentType,InstrumentCurrency) VALUES (@name, @symbol, @type, @currency)";
+                string query = "IF NOT EXISTS(SELECT 1 FROM Instruments WHERE InstrumentSymbol = @symbol) BEGIN INSERT INTO Instruments(InstrumentName, InstrumentSymbol, InstrumentType, InstrumentCurrency) VALUES(@name, @symbol, @type, @currency) END";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 cmd.Parameters.AddWithValue("@name", (name == "") ? "NULL" : name);
