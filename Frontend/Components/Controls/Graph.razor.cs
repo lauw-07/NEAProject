@@ -47,7 +47,7 @@ namespace Frontend.Components.Controls {
 
             if (Timeseries != null && Timeseries.Count != 0) {
                 Console.WriteLine("Attempting to draw graph");
-                await Js.InvokeVoidAsync("DrawGraph", Dataset);
+                await Js.InvokeVoidAsync("DrawGraph", Dataset, "graph");
                 Console.WriteLine("Graph drawn");
             }
         }

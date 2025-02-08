@@ -8,6 +8,7 @@ namespace Frontend.Components.Controls {
         private List<string> _strategyParameters = new();
 
         private Dictionary<string, string> _selectedParams = new();
+        private bool _hasParamsBeenSelected = false;
 
         protected override void OnParametersSet() {
             if (Strategy != null) {
@@ -48,10 +49,20 @@ namespace Frontend.Components.Controls {
         private List<string> GetBacktestParams(string strategy) {
             switch (Strategy) {
                 case "Bollinger Bands Breakout":
-                    return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type"};
+                    return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type" };
                 default:
                     return new List<string>();
             }
+        }
+
+        private void GeneratePnlGraph() {
+            foreach (KeyValuePair<string, string> pair in _selectedParams) {
+                if (pair.Value == "") {
+                    return;
+                }
+            }
+
+            _hasParamsBeenSelected = true;
         }
     }
 }

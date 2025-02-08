@@ -1,6 +1,6 @@
 ﻿const margin = { top: 70, right: 70, bottom: 70, left: 70 }
 
-function GetDimensions() {
+function GetDimensions(divId) {
     /*const parentDiv = document.getElementById("graph");
     const width = parentDiv.clientWidth - margin.top - margin.bottom;
     const height = parentDiv.clientHeight - margin.left - margin.right;
@@ -8,8 +8,8 @@ function GetDimensions() {
     dimensions[0] = width;
     dimensions[1] = height;*/
 
-    const width = parseInt(d3.select("#graph").style('width')) - margin.top - margin.bottom;
-    const height = parseInt(d3.select("#graph").style('height')) - margin.left - margin.right;
+    const width = parseInt(d3.select(`#${divId}`).style('width')) - margin.top - margin.bottom;
+    const height = parseInt(d3.select(`#${divId}`).style('height')) - margin.left - margin.right;
 
     return { width, height }
 };
@@ -32,15 +32,19 @@ function HideTooltip(tooltip) {
     tooltip.style("display", "none");
 }
 
-function DrawGraph(datasets) {
+function DrawGraph(datasets, divId) {
     /*const width = dimensions[0];
     const height = dimensions[1];*/
-    const { width, height } = GetDimensions();
+    const { width, height } = GetDimensions(divId);
+
+    if (!Array.isArray(datasets)) {
+        datasets = [datasets];  
+    }
     
     //To create new instances of the svg component so that it can be updated with new dimensions
-    d3.select("#graph").selectAll("*").remove();
+    d3.select(`#${divId}`).selectAll("*").remove();
     
-    const svg = d3.select("#graph")
+    const svg = d3.select(`#${divId}`)
         .append("svg")
         //.attr("preserveAspectRatio", "xMinYMin meet")
         //.attr("viewBox", `0 0 ${width} ${height}`)

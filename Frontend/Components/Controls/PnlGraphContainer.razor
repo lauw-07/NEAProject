@@ -16,9 +16,15 @@
         }
     </div>
 
-    <PnlGraph 
-        Strategy="@Strategy"
-        Parameters="@_selectedParams" />  
+    <div class="pnl-loader">
+        <button class="pnl-loader-btn" @onclick="GeneratePnlGraph">Generate P&L</button>
+    </div>
+
+    @if(_hasParamsBeenSelected) {
+        <PnlGraph Strategy="@Strategy"
+                  Parameters="@_selectedParams" />
+    }
+    
    
 </div>
 

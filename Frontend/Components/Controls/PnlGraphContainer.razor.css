@@ -1,4 +1,9 @@
-﻿.pnl-graph-container {
+﻿html, body {
+    height: 100%;
+    margin: 0;
+}
+
+#pnl-graph-container {
     width: 100%;
     height: 100%;
     flex-direction: column;

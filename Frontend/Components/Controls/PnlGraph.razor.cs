@@ -4,6 +4,7 @@ using Frontend.Models.Database;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using System.Data;
 using System.Diagnostics.Metrics;
 using Instrument = Frontend.Models.Database.Instrument;
 
@@ -16,14 +17,28 @@ namespace Frontend.Components.Controls {
         public Dictionary<string, string> Parameters { get; set; } = new();
 
         private TS _pnlTs = new();
+        private readonly List<Dictionary<string, object>> Dataset = new();
 
         protected override async void OnParametersSet() {
             _pnlTs.Clear();
             if (Parameters != null && Parameters.Count > 0) {
                 await Backtest(databaseHandler);
-                await Js.InvokeVoidAsync("DrawGraph", _pnlTs);
+                AddToDataset(new List<TS>() { _pnlTs });
+                await Js.InvokeVoidAsync("DrawGraph", Dataset, "pnlGraph");
             } else {
                 Console.WriteLine("Parameters data is null");
+            }
+        }
+
+        private void AddToDataset(List<TS> timeseries) {
+            foreach (TS ts in timeseries) {
+                List<string> timestamps = ts.GetTimestamps().Select(ts => ts.ToShortDateString()).ToList();
+                List<double> values = ts.GetValues();
+
+                Dataset.Add(new Dictionary<string, object> {
+                        { "timestamps", timestamps },
+                        { "values", values }
+                });
             }
         }
 
@@ -75,11 +90,11 @@ namespace Frontend.Components.Controls {
                     case "Exposure":
                         StrategyParams exposureParams = new StrategyParams();
                         if (IsFixedValueExposure) {
-                            exposureParams.AddInput("ExposureFixedValue", pair.Value);
-                            strategyParams.Add("ExposureFixedValue", pair.Value);
+                            exposureParams.AddInput("ExposureFixedValue", double.Parse(pair.Value));
+                            strategyParams.Add("ExposureFixedValue", double.Parse(pair.Value));
                         } else {
-                            exposureParams.AddInput("ExposureFixedShare", pair.Value);
-                            strategyParams.Add("ExposureFixedShare", pair.Value);
+                            exposureParams.AddInput("ExposureFixedShare", double.Parse(pair.Value));
+                            strategyParams.Add("ExposureFixedShare", double.Parse(pair.Value));
                         }
                         strategyParams.Add("ExposureParams", exposureParams);
                         break;
