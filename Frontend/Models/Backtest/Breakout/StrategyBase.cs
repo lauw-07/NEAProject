@@ -26,5 +26,7 @@ namespace Frontend.Models.Backtest.Breakout {
         public abstract double GetTargetPosition();
 
         public abstract double GetSignal();
+
+        public abstract int GetWindowSize();
     }
 }

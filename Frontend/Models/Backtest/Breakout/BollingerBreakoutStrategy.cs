@@ -33,6 +33,7 @@ namespace Frontend.Models.Backtest.Breakout {
         private BollingerBands _bollingerBands;
         private double _upperBound = double.NaN;
         private double _lowerBound = double.NaN;
+        private int _windowSize = 0;
 
         private BollingerBreakoutForecastStates _state = BollingerBreakoutForecastStates.Idle;
         private ExposureManager _exposureManager;
@@ -41,9 +42,9 @@ namespace Frontend.Models.Backtest.Breakout {
 
         public BollingerBreakoutStrategy(StrategyParams strategyParams) : base(strategyParams) {
             // assume input dictionary has a key for the closePrices
-            int windowSize = (int)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.WindowSize.ToString()];
+            _windowSize = (int)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.WindowSize.ToString()];
             double width = (double)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.Width.ToString()];
-            _bollingerBands = new BollingerBands(windowSize, width);
+            _bollingerBands = new BollingerBands(_windowSize, width);
 
             Type exposureManagerClass = (Type)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureClass.ToString()];
             StrategyParams exposureManagerParams = (StrategyParams)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureParams.ToString()];
@@ -101,7 +102,15 @@ namespace Frontend.Models.Backtest.Breakout {
         // allow update on a whole TS
         public override TS Update(List<StrategyInput> strategyInputs) {
             TS targetPositions = new TS();
+
+            int count = 0;
             foreach (StrategyInput strategyInput in strategyInputs) {
+                if (count < _windowSize) {
+                    // skip first few timestamps to allow for the bollinger bands to be calculated
+                    count++;
+                    continue;
+                }
+
                 Update(strategyInput);
                 DateTime timestamp = (DateTime)strategyInput.GetInputs()[BollingerBreakoutStrategyFields.Timestamp.ToString()];
                 targetPositions.Add(timestamp, GetTargetPosition());
@@ -115,6 +124,10 @@ namespace Frontend.Models.Backtest.Breakout {
 
         public override double GetSignal() {
             return _signal;
+        }
+
+        public override int GetWindowSize() {
+            return _windowSize;
         }
 
     }

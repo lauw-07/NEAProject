@@ -16,14 +16,15 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public Dictionary<string, string> Parameters { get; set; } = new();
 
-        private TS _pnlTs = new();
+        private List<TS> _timeseriesToGraph = new();
         private readonly List<Dictionary<string, object>> Dataset = new();
 
         protected override async void OnParametersSet() {
-            _pnlTs.Clear();
+            Dataset.Clear();
+            _timeseriesToGraph.Clear();
             if (Parameters != null && Parameters.Count > 0) {
                 await Backtest(databaseHandler);
-                AddToDataset(new List<TS>() { _pnlTs });
+                AddToDataset(_timeseriesToGraph);
                 await Js.InvokeVoidAsync("DrawGraph", Dataset, "pnlGraph");
             } else {
                 Console.WriteLine("Parameters data is null");
@@ -53,7 +54,7 @@ namespace Frontend.Components.Controls {
 
             switch (Strategy) {
                 case "Bollinger Bands Breakout":
-                    _pnlTs = GenerateBollingerBreakoutPnl(instrument, timeseries, backtestManager);
+                    GenerateBollingerBreakoutPnl(instrument, timeseries, backtestManager);
                     break;
                 default:
                     break;
@@ -117,7 +118,7 @@ namespace Frontend.Components.Controls {
             return strategyParams;
         }
 
-        private TS GenerateBollingerBreakoutPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
+        private void GenerateBollingerBreakoutPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
             TS closePxTs = timeseries[1];
 
             Type strategyType = typeof(BollingerBreakoutStrategy);
@@ -137,7 +138,13 @@ namespace Frontend.Components.Controls {
             }
 
             TS pnlTs = backtestManager.RunBacktest(strategyInputs);
-            return pnlTs;
+
+            (TS, TS) bollingerBands = closePxTs.BollingerBands((int)inputDict["WindowSize"], (double)inputDict["Width"]);
+            List<TS> indicatorTs = new List<TS>() { bollingerBands.Item1, bollingerBands.Item2 };
+
+            _timeseriesToGraph.Add(closePxTs);
+            _timeseriesToGraph.Add(pnlTs);
+            _timeseriesToGraph.AddRange(indicatorTs);
         }
 
         private async Task<Instrument> ReadInstrumentFromDatabase(DatabaseHandler databaseHandler, string ticker) {
