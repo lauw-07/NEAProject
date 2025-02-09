@@ -7,7 +7,6 @@ namespace Frontend.Models.Indicators {
         private Queue<double> values = new Queue<double>();
         private double _upperBand = double.NaN;
         private double _lowerBand = double.NaN;
-
         private double width;
 
         public BollingerBands(int windowSize, double width) : base() {

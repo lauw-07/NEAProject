@@ -36,13 +36,7 @@ namespace Frontend.Models.Backtest {
             _targetPositions = targetPositions.GetValues();
             _timestamps = targetPositions.GetTimestamps();
 
-            int count = 0;
             foreach (StrategyInput input in inputs) {
-                if (count < _strategy.GetWindowSize()) {
-                    // skip first few timestamps to allow for the bollinger bands to be calculated
-                    count++;
-                    continue;
-                }
                 _prices.Add(input.GetClosePrice());
             }
 

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Frontend.Models.Backtest.Breakout {
     public abstract class ExposureManager {
+        protected double exposure;
+        protected double numShares;
+
         public ExposureManager() { }
         public abstract double GetExposure(double price = double.NaN);
         public abstract double GetNumShares(double price = double.NaN);
@@ -24,9 +27,6 @@ namespace Frontend.Models.Backtest.Breakout {
 
     // when you want $1 million (a fixed value) of AAPL but you need to divide by price of 1 share
     public class FixedValueExposureManager : ExposureManager {
-        protected double exposure;
-        protected double numShares;
-
         public FixedValueExposureManager(StrategyParams exposureParams) : base() {
             exposure = (double)exposureParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureFixedValue.ToString()];
             numShares = double.NaN;
@@ -42,14 +42,13 @@ namespace Frontend.Models.Backtest.Breakout {
         }
 
         public override void Update(StrategyInput input) {
-
+            // do nothing
         }
     }
 
     // when you want 1000 (a fixed quantity of) shares of AAPL
-    public class FixedShareExposureManager : FixedValueExposureManager {
-
-        public FixedShareExposureManager(StrategyParams exposureParams) : base(exposureParams) {
+    public class FixedShareExposureManager : ExposureManager {
+        public FixedShareExposureManager(StrategyParams exposureParams) : base() {
             numShares = (double)exposureParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureFixedShare.ToString()];
             exposure = double.NaN;
         }
@@ -60,6 +59,10 @@ namespace Frontend.Models.Backtest.Breakout {
 
         public override double GetNumShares(double price = double.NaN) {
             return numShares;
+        }
+
+        public override void Update(StrategyInput input) {
+            // do nothing
         }
     }
 }
