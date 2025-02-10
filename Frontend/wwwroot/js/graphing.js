@@ -33,8 +33,6 @@ function HideTooltip(tooltip) {
 }
 
 function DrawGraph(datasets, divId) {
-    /*const width = dimensions[0];
-    const height = dimensions[1];*/
     const { width, height } = GetDimensions(divId);
 
     if (!Array.isArray(datasets)) {
@@ -46,17 +44,29 @@ function DrawGraph(datasets, divId) {
     
     const svg = d3.select(`#${divId}`)
         .append("svg")
-        //.attr("preserveAspectRatio", "xMinYMin meet")
-        //.attr("viewBox", `0 0 ${width} ${height}`)
-        //.attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    let pnlData = null;
+    let priceData = {};
+
+    Object.entries(datasets).forEach(([label, data]) => {
+        if (label === "pnl") {
+            pnlData = data;
+        } else {
+            priceData[label] = data;
+        }
+    });
+
+    const timestamps = Object.values(datasets).flatMap(data => data.timestamps);
+    const priceDataValues = Object.values(priceData).flatMap(data => data.timestamps);
+    const pnlValues = pnlData.values;
     const padding = 20;
 
-    const allTimestamps = Object.values(datasets).flatMap(data => data.timestamps);
+
+
     const x = d3.scaleTime()
         .domain(d3.extent(timestamps, timestamp => d3.timeParse("%d/%m/%Y")(timestamp)))
         .range([padding, width]);
@@ -75,15 +85,12 @@ function DrawGraph(datasets, divId) {
 
     svg.selectAll(".tick text")
         .attr("fill", "#a0a3a1")
-        
 
+    const yPriceData = d3.scaleLinear()
+        .domain(d3.extent(priceDataValues))
+        .range([height, 0]);    
 
-    const values = datasets.flatMap(ts => ts.values);
-    const y = d3.scaleLinear()
-        .domain(d3.extent(values))
-        .range([height, 0]);
-
-    const yAxisCall = d3.axisLeft(y);
+    const yAxisCall = d3.axisLeft(yPriceData);
     svg.append("g")
         .style("font-size", "13px")
         .call(yAxisCall)
@@ -91,6 +98,37 @@ function DrawGraph(datasets, divId) {
         .style("stroke-opacity", 0)
         .selectAll(".tick text")
         .style("fill", "#a0a3a1")
+
+    if (pnlData) {
+        const yPnlData = d3.scaleLinear()
+            .domain(d3.extent(pnlValues))
+            .range([height, 0]);
+
+        const yPnlAxisCall = d3.axisRight(yPnlData);
+        svg.append("g")
+            .style("font-size", "13px")
+            .call(yPnlAxisCall)
+            .call(g => g.select(".domain").remove())
+            .style("stroke-opacity", 0)
+            .selectAll(".tick text")
+            .style("fill", "#a0a3a1")
+
+        const formattedPnlDataset = yPnlData.timestamps.map((timestamp, index) => ({
+            timestamp: d3.timeParse("%d/%m/%Y")(timestamp),
+            value: yPnlData.values[index]
+        }));
+
+        svg.append("path")
+            .datum(formattedPnlDataset)
+            .attr("fill", "none")
+            .attr("stroke", "#ff7f0e")
+            .attr("stroke-width", 1.5)
+            .attr("stroke-dasharray", "4,4")
+            .attr("d", d3.line()
+                .x(datapoint => x(datapoint.timestamp))
+                .y(datapoint => yPnlData(datapoint.value))
+            );
+    }
 
     svg.selectAll("verticalGrid")
         .data(x.ticks())
@@ -168,10 +206,10 @@ function DrawGraph(datasets, divId) {
     //A TS object contains List of timestamps and a List of values
     const color = d3.scaleOrdinal(d3.schemeCategory10);
     let i = 0;
-    datasets.forEach(ts => {
-        const formattedDataset = ts.timestamps.map((timestamp, index) => ({
+    Object.entries(priceData).forEach(([label, data]) => {
+        const formattedDataset = data.timestamps.map((timestamp, index) => ({
             timestamp: d3.timeParse("%d/%m/%Y")(timestamp),
-            value: ts.values[index]
+            value: data.values[index]
         }));
 
         svg.append("path")
@@ -181,7 +219,7 @@ function DrawGraph(datasets, divId) {
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
                 .x(datapoint => x(datapoint.timestamp))
-                .y(datapoint => y(datapoint.value))
+                .y(datapoint => yPriceData(datapoint.value))
             );
         i++;
     });
