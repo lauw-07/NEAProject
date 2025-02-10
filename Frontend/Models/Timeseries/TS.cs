@@ -13,7 +13,7 @@ namespace Frontend.Models.Timeseries {
         //Time series class
         protected List<DateTime> _timestamps = new List<DateTime>();
         protected List<double> _values = new List<double>();
-        private string _indicator = string.Empty;
+        private string _indicator = "";
 
         //Constructor Overloading
         public TS() { }
@@ -84,7 +84,9 @@ namespace Frontend.Models.Timeseries {
         public DateTime GetLastTime() {
             return _timestamps[_timestamps.Count - 1];
         }
-
+        public string GetIndicator() {
+            return _indicator;
+        }
         public override bool Equals(object? obj) {
             if (obj is TS other) {
                 return _indicator == other._indicator &&

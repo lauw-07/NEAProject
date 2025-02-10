@@ -66,9 +66,9 @@
         This would also mean that a parameter needs to be passed in from inputs made in the topbar component as well as the sidebar component
     -->
 
-    @if (TimeseriesParameter != null && TimeseriesParameter.Any()) {
+    @if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
         <Graph
-            Timeseries="@TimeseriesParameter" 
+            Timeseries="@TimeseriesParam" 
             IndicatorTS="@IndicatorTSParameter"
             @rendermode="InteractiveServer" />
     }

@@ -25,13 +25,13 @@ namespace Frontend.Components.Controls {
             if (!string.IsNullOrEmpty(SelectedIndicator) && SelectedIndicator != _previousIndicator) {
                 _previousIndicator = SelectedIndicator;
 
-                if (TimeseriesParameter != null && TimeseriesParameter.Count > 0) {
+                if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
                     if (_selectedIndicatorList.Contains(SelectedIndicator)) {
                         _selectedIndicatorList.Remove(SelectedIndicator);
-                        UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, false);
+                        UpdateIndicatorTs(TimeseriesParam, SelectedIndicator, false);
                     } else {
                         _selectedIndicatorList.Add(SelectedIndicator);
-                        UpdateIndicatorTs(TimeseriesParameter, SelectedIndicator, true);
+                        UpdateIndicatorTs(TimeseriesParam, SelectedIndicator, true);
                     }
                 }
 
@@ -48,19 +48,20 @@ namespace Frontend.Components.Controls {
         private PolygonStockPriceData? polygonStockPriceData;
         private string symbol = string.Empty;
         private List<Result>? results;
-        private List<TS> _localTimeseries = new();
+        private TS _localTimeseries = new();
         private Dictionary<string, List<TS>> _indicatorCache = new();
 
-        private List<TS> TimeseriesParameter = new(); //Parameters to pass on to GraphComponent
+        //private List<TS> TimeseriesParam = new(); //Parameters to pass on to GraphComponent
+        private TS TimeseriesParam = new();
         private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
             if (firstRender) {
                 Console.WriteLine("Fetching initial data from database");
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
-                TimeseriesParameter = await GetLocalTS();
+                TimeseriesParam = await GetLocalTS();
                 
-                if (TimeseriesParameter == null || TimeseriesParameter.Count == 0) {
+                if (TimeseriesParam.Size() <= 0) {
                     Console.WriteLine("Timeseries is empty");
                 }
 
@@ -71,13 +72,11 @@ namespace Frontend.Components.Controls {
         private async Task FetchData() {
             await LoadData();
             await SaveToDatabase();
-            TimeseriesParameter = await GetLocalTS();
+            TimeseriesParam = await GetLocalTS();
         }
 
-        private async Task<List<TS>> GetLocalTS() {
-            if (_localTimeseries == null || _localTimeseries.Count == 0) {
-                _localTimeseries = await ReadFromDatabase();
-            }
+        private async Task<TS> GetLocalTS() {
+            _localTimeseries = await ReadFromDatabase();
             return _localTimeseries;
         }
 
@@ -119,11 +118,11 @@ namespace Frontend.Components.Controls {
             }
         }
 
-        private async Task<List<TS>> ReadFromDatabase() {
+        private async Task<TS> ReadFromDatabase() {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
             int initialCapacity = priceData.Count;
 
-            TS openPxTimeseries = new TS(initialCapacity);
+            //TS openPxTimeseries = new TS(initialCapacity);
             TS closePxTimeseries = new TS(initialCapacity);
 
             /*
@@ -135,17 +134,18 @@ namespace Frontend.Components.Controls {
                 double closePx = priceDataObj.ClosePx;
                 DateTime pxDate = priceDataObj.PxDate;
 
-                openPxTimeseries.Add(pxDate, openPx);
+                //openPxTimeseries.Add(pxDate, openPx);
                 closePxTimeseries.Add(pxDate, closePx);
             }
 
-            return new List<TS> { openPxTimeseries, closePxTimeseries };
+            //return new List<TS> { openPxTimeseries, closePxTimeseries };
+            return closePxTimeseries;
         }
 
         
 
-        private void UpdateIndicatorTs(List<TS> originalTs, string indicator, bool addIndicator) {
-            if (originalTs == null || originalTs.Count == 0) return;
+        private void UpdateIndicatorTs(TS originalTs, string indicator, bool addIndicator) {
+            if (originalTs == null || originalTs.Size() == 0) return;
 
             if (addIndicator) {
                 if (!_indicatorCache.ContainsKey(indicator)) {
@@ -159,20 +159,20 @@ namespace Frontend.Components.Controls {
             }
         }
 
-        private List<TS> GenerateIndicatorTS(List<TS> originalTs, string indicator) {
-            TS openPxTS = originalTs[0];
-            TS closePxTS = originalTs[1];
+        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
+            //TS openPxTS = originalTs[0];
+            //TS closePxTS = originalTs[1];
 
             switch (indicator) {
                 case "Simple Moving Average":
-                    return new List<TS> { openPxTS.Sma(20), closePxTS.Sma(20) };
+                    return new List<TS> { /*openPxTS.Sma(20),*/ closePxTs.Sma(20) };
                 case "Exponentially Weighted Moving Average":
-                    return new List<TS> { openPxTS.Ewma(20), closePxTS.Ewma(20) };
+                    return new List<TS> { /*openPxTS.Ewma(20),*/ closePxTs.Ewma(20) };
                 case "Bollinger Bands":
-                    (TS,TS) bollingerBands = closePxTS.BollingerBands(20, 2);
+                    (TS,TS) bollingerBands = closePxTs.BollingerBands(20, 2);
                     return new List<TS> { bollingerBands.Item1, bollingerBands.Item2 };
                 case "Exponential Weighted Volatility":
-                    return new List<TS> { closePxTS.Ewvol(20) };
+                    return new List<TS> { closePxTs.Ewvol(20) };
                 default:
                     return new List<TS>();
             }
