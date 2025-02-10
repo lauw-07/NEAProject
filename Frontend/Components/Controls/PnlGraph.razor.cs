@@ -5,8 +5,6 @@ using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Data;
-using System.Diagnostics.Metrics;
-using Instrument = Frontend.Models.Database.Instrument;
 
 namespace Frontend.Components.Controls {
     public partial class PnlGraph {
@@ -17,29 +15,18 @@ namespace Frontend.Components.Controls {
         public Dictionary<string, string> Parameters { get; set; } = new();
 
         private List<TS> _timeseriesToGraph = new();
-        private readonly List<Dictionary<string, object>> Dataset = new();
+        private readonly Dictionary<string, Dictionary<string, object>> Dataset = new();
+
+        // for example { "IndicatorTs" : [{ "Timestamps" : [ 1230912 ] }, { "Values" : [ 123 ] } ]}
 
         protected override async void OnParametersSet() {
             Dataset.Clear();
             _timeseriesToGraph.Clear();
             if (Parameters != null && Parameters.Count > 0) {
                 await Backtest(databaseHandler);
-                AddToDataset(_timeseriesToGraph);
                 await Js.InvokeVoidAsync("DrawGraph", Dataset, "pnlGraph");
             } else {
                 Console.WriteLine("Parameters data is null");
-            }
-        }
-
-        private void AddToDataset(List<TS> timeseries) {
-            foreach (TS ts in timeseries) {
-                List<string> timestamps = ts.GetTimestamps().Select(ts => ts.ToShortDateString()).ToList();
-                List<double> values = ts.GetValues();
-
-                Dataset.Add(new Dictionary<string, object> {
-                        { "timestamps", timestamps },
-                        { "values", values }
-                });
             }
         }
 
@@ -56,9 +43,18 @@ namespace Frontend.Components.Controls {
                 case "Bollinger Bands Breakout":
                     GenerateBollingerBreakoutPnl(instrument, timeseries, backtestManager);
                     break;
+                case "EWMA Crossover":
+                    GenerateEwmaCrossoverPnl();
+                    break;
                 default:
                     break;
             }
+        }
+
+
+        private void GenerateEwmaCrossoverPnl() {
+            // Haven't created an ewma crossover strategy yet but it would function similarly to the bollinger breakout strategy
+            throw new NotImplementedException();
         }
 
         private Dictionary<string, object> GenerateBollingerBreakoutParams(Dictionary<string, string> rawParams) {
@@ -142,10 +138,29 @@ namespace Frontend.Components.Controls {
             (TS, TS) bollingerBands = closePxTs.BollingerBands((int)inputDict["WindowSize"], (double)inputDict["Width"]);
             List<TS> indicatorTs = new List<TS>() { bollingerBands.Item1, bollingerBands.Item2 };
 
-            _timeseriesToGraph.Add(closePxTs);
-            _timeseriesToGraph.Add(pnlTs);
-            _timeseriesToGraph.AddRange(indicatorTs);
+            AddToDataset(closePxTs, "Close Prices");
+            AddToDataset(pnlTs, "P&L");
+            AddToDataset(indicatorTs, "Bollinger Bands");
         }
+
+        private void AddToDataset(TS timeseries, string label) {
+            List<string> timestamps = timeseries.GetTimestamps().Select(ts => ts.ToShortDateString()).ToList();
+            List<double> values = timeseries.GetValues();
+
+            Dictionary<string, object> dataPoints = new() {
+                { "timestamps", timestamps },
+                { "values", values }
+            };
+
+            Dataset.Add(label, dataPoints);
+        }
+
+        private void AddToDataset(List<TS> timeseries, string label) {
+            foreach(TS ts in timeseries) {
+                AddToDataset(ts, label);
+            }
+        }
+
 
         private async Task<Instrument> ReadInstrumentFromDatabase(DatabaseHandler databaseHandler, string ticker) {
             Instrument instrument = await databaseHandler.GetInstrumentDataAsync(ticker);

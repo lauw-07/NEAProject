@@ -55,7 +55,8 @@ function DrawGraph(datasets, divId) {
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     const padding = 20;
-    const timestamps = datasets.flatMap(ts => ts.timestamps);
+
+    const allTimestamps = Object.values(datasets).flatMap(data => data.timestamps);
     const x = d3.scaleTime()
         .domain(d3.extent(timestamps, timestamp => d3.timeParse("%d/%m/%Y")(timestamp)))
         .range([padding, width]);
