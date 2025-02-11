@@ -28,11 +28,9 @@ export default function DrawGraph(datasets, divId) {
     let priceData = {};
 
     Object.entries(datasets).forEach(([label, data]) => {
-        if (label === "pnl") {
-            continue;
-        } else {
+        if (label !== "pnl") {
             priceData[label] = data;
-        }
+        } 
     });
 
     const timestamps = Object.values(datasets).flatMap(data => data[0]["timestamps"]);
