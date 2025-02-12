@@ -54,14 +54,14 @@ namespace Frontend.Components.Controls {
 
             if (Timeseries != null && Timeseries.Size() != 0) {
                 Console.WriteLine("Attempting to draw graph");
-                await Js.InvokeVoidAsync("CreateGraph", Dataset, "graph");
-                //await Js.InvokeVoidAsync("DrawGraph", Dataset, "graph");
+                //await Js.InvokeVoidAsync("CreateGraph", Dataset, "graph");
+                await Js.InvokeVoidAsync("DrawGraph", Dataset, "graph");
                 
 
-                /*IJSObjectReference module = await Js.InvokeAsync<IJSObjectReference>("import", "/js/drawGraph.js");
-                await module.InvokeVoidAsync("DrawGraph", Dataset, "graph");*/
-                Console.WriteLine("Graph drawn");
+                //IJSObjectReference module = await Js.InvokeAsync<IJSObjectReference>("import", "/js/drawGraph.js");
+                //await module.InvokeVoidAsync("DrawGraph", Dataset, "graph");
 
+                Console.WriteLine("Graph drawn");
             }
         }
     }
