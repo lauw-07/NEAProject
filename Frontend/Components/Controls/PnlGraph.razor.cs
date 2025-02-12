@@ -17,7 +17,7 @@ namespace Frontend.Components.Controls {
         private List<TS> _timeseriesToGraph = new();
         private readonly Dictionary<string, Dictionary<string, object>> Dataset = new();
 
-        // for example { "IndicatorTs" : [{ "Timestamps" : [ 1230912 ] }, { "Values" : [ 123 ] } ]}
+        // for example { "IndicatorTs" : [{ "Timestamps" : [ 1230912, 1230912, 1230912, 1230912 ] }, { "Values" : [ 123, 123 ] } ]}
 
         protected override async void OnParametersSet() {
             Dataset.Clear();
@@ -156,8 +156,9 @@ namespace Frontend.Components.Controls {
         }
 
         private void AddToDataset(List<TS> timeseries, string label) {
-            foreach(TS ts in timeseries) {
-                AddToDataset(ts, label);
+            if (label == "Bollinger Bands") {
+                AddToDataset(timeseries[0], "Bollinger Bands Upper Band");
+                AddToDataset(timeseries[1], "Bollinger Bands Lower Band");
             }
         }
 

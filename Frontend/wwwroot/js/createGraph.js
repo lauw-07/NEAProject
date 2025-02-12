@@ -1,8 +1,8 @@
 ﻿const margin = { top: 70, right: 70, bottom: 70, left: 70 }
 
 function GetDimensions(divId) {
-    const width = parseInt(d3.select(`#${divId}`).style('width')) - margin.top - margin.bottom;
-    const height = parseInt(d3.select(`#${divId}`).style('height')) - margin.left - margin.right;
+    const width = parseInt(d3.select(`#${divId}`).style('width')) - margin.left - margin.right;
+    const height = parseInt(d3.select(`#${divId}`).style('height')) - margin.top - margin.bottom;
     return { width, height }
 };
 
@@ -143,12 +143,13 @@ function UpdateCrosshair(event, tooltip, svg, height, width, xScale, dataset) {
         .attr("y2", mouseYcoord);
 
     //Ts = timestamp
+    // example dataset: { "IndicatorTs" : [{ "Timestamps" : [ 1230912, 1230912, 1230912, 1230912 ] }, { "Values" : [ 123, 123, 123, 123 ] } ]}
     const mouseTs = xScale.invert(mouseXcoord);
     let closestValues = {};
 
     Object.entries(dataset).forEach(([label, data]) => {
-        const timestamps = data.flatMap(d => d["timestamps"]);
-        const values = data.flatMap(d => d["values"]);
+        const timestamps = data["timestamps"].map(ts => d3.timeParse("%d/%m/%Y")(ts));
+        const values = data["values"];
 
         const closestIndex = timestamps.reduce((prev, curr, index) => {
             if (Math.abs(curr - mouseTs) < Math.abs(timestamps[prev] - mouseTs)) {
@@ -159,17 +160,17 @@ function UpdateCrosshair(event, tooltip, svg, height, width, xScale, dataset) {
         }, 0);
 
         const closestValue = values[closestIndex];
+        closestValues[label] = closestValue;
     });
 
     let toolTipContent = "";
 
     Object.entries(closestValues).forEach(([label, value]) => {
-        toolTipContent += `${label}: ${value}`;
+        toolTipContent += `<div class="tooltip-content">${label}: ${value}</div>`;
     });
 
     UpdateTooltip(tooltip, event, toolTipContent);
 };
-
 
 function DrawGraph(datasets, divId) {
     const { width, height } = GetDimensions(divId);
@@ -184,11 +185,11 @@ function DrawGraph(datasets, divId) {
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-    const pnlData = datasets["pnl"] ? datasets["pnl"] : null;
+    const pnlData = datasets["P&L"] ? datasets["P&L"] : null;
     let priceData = {};
 
     Object.entries(datasets).forEach(([label, data]) => {
-        if (label !== "pnl") {
+        if (label !== "P&L") {
             priceData[label] = data;
         }
     });
@@ -209,8 +210,8 @@ function DrawGraph(datasets, divId) {
         y.push(yPnl);
         pos.push("right");
 
-        const formattedPnlData = pnlData["timestamps"].map((timestamp, index) => ({
-            timestamp: d3.timeParse("%d/%m/%Y")(timestamp),
+        const formattedPnlData = pnlData["timestamps"].map((ts, index) => ({
+            timestamp: d3.timeParse("%d/%m/%Y")(ts),
             value: pnlData["values"][index]
         }));
 
@@ -242,13 +243,14 @@ function DrawGraph(datasets, divId) {
         .on("mousemove", event => UpdateCrosshair(event, tooltip, svg, height, width, x, datasets))
         .on("mouseout", () => {
             crosshair.style("display", "none");
+            HideTooltip(tooltip);
         });
 
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     Object.entries(priceData).forEach(([label, data], i) => {
-        const formattedDataset = data["timestamps"].map((timestamp, index) => ({
-            timestamp: d3.timeParse("%d/%m/%Y")(timestamp),
+        const formattedDataset = data["timestamps"].map((ts, index) => ({
+            timestamp: d3.timeParse("%d/%m/%Y")(ts),
             value: data["values"][index]
         }));
 
