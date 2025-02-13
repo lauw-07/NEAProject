@@ -84,6 +84,10 @@ namespace Frontend.Models.Timeseries {
         public DateTime GetLastTime() {
             return _timestamps[_timestamps.Count - 1];
         }
+
+        public void SetIndicator(string indicator) {
+            _indicator = indicator;
+        }
         public string GetIndicator() {
             return _indicator;
         }

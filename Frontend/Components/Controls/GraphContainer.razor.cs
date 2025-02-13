@@ -165,13 +165,20 @@ namespace Frontend.Components.Controls {
 
             switch (indicator) {
                 case "Simple Moving Average":
+                    closePxTs.SetIndicator("Sma");
                     return new List<TS> { /*openPxTS.Sma(20),*/ closePxTs.Sma(20) };
                 case "Exponentially Weighted Moving Average":
+                    closePxTs.SetIndicator("Ewma");
                     return new List<TS> { /*openPxTS.Ewma(20),*/ closePxTs.Ewma(20) };
                 case "Bollinger Bands":
                     (TS,TS) bollingerBands = closePxTs.BollingerBands(20, 2);
-                    return new List<TS> { bollingerBands.Item1, bollingerBands.Item2 };
+                    TS upperBound = bollingerBands.Item1;
+                    upperBound.SetIndicator("Bollinger Bands Upper Band");
+                    TS lowerBound = bollingerBands.Item2;
+                    lowerBound.SetIndicator("Bollinger Bands Lower Band");
+                    return new List<TS> { upperBound, lowerBound };
                 case "Exponential Weighted Volatility":
+                    closePxTs.SetIndicator("Ewvol");
                     return new List<TS> { closePxTs.Ewvol(20) };
                 default:
                     return new List<TS>();

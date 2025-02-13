@@ -8,9 +8,5 @@
     font-size: 13px;
     display: none;
     pointer-events: none;
-    gap: 5px;
-}
-
-.tooltip-content {
-    margin-bottom: 5px;
+    gap: 10px;
 }
