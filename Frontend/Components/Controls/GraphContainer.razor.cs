@@ -19,12 +19,8 @@ namespace Frontend.Components.Controls {
 
         private List<string> _selectedIndicatorList = new List<string>();
 
-        private string? _previousIndicator;
-
         protected override void OnParametersSet() {
-            if (!string.IsNullOrEmpty(SelectedIndicator) && SelectedIndicator != _previousIndicator) {
-                _previousIndicator = SelectedIndicator;
-
+            if (!string.IsNullOrEmpty(SelectedIndicator)) {
                 if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
                     if (_selectedIndicatorList.Contains(SelectedIndicator)) {
                         _selectedIndicatorList.Remove(SelectedIndicator);
@@ -165,11 +161,13 @@ namespace Frontend.Components.Controls {
 
             switch (indicator) {
                 case "Simple Moving Average":
-                    closePxTs.SetIndicator("Sma");
-                    return new List<TS> { /*openPxTS.Sma(20),*/ closePxTs.Sma(20) };
+                    TS smaTs = closePxTs.Sma(20);
+                    smaTs.SetIndicator("Sma");
+                    return new List<TS> { /*openPxTS.Sma(20),*/ smaTs };
                 case "Exponentially Weighted Moving Average":
-                    closePxTs.SetIndicator("Ewma");
-                    return new List<TS> { /*openPxTS.Ewma(20),*/ closePxTs.Ewma(20) };
+                    TS ewmaTs = closePxTs.Ewma(20);
+                    ewmaTs.SetIndicator("Ewma");
+                    return new List<TS> { /*openPxTS.Ewma(20),*/ ewmaTs };
                 case "Bollinger Bands":
                     (TS,TS) bollingerBands = closePxTs.BollingerBands(20, 2);
                     TS upperBound = bollingerBands.Item1;
@@ -178,8 +176,9 @@ namespace Frontend.Components.Controls {
                     lowerBound.SetIndicator("Bollinger Bands Lower Band");
                     return new List<TS> { upperBound, lowerBound };
                 case "Exponential Weighted Volatility":
-                    closePxTs.SetIndicator("Ewvol");
-                    return new List<TS> { closePxTs.Ewvol(20) };
+                    TS ewvolTs = closePxTs.Ewvol(20);
+                    ewvolTs.SetIndicator("Ewvol");
+                    return new List<TS> { ewvolTs };
                 default:
                     return new List<TS>();
             }
