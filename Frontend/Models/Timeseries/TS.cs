@@ -122,7 +122,6 @@ namespace Frontend.Models.Timeseries {
             for (int i = 0; i < _timestamps.Count; i++) {
                 smaTs._values[i] = sma.Update<double>(smaTs._values[i]);
             }
-            _indicator = "sma";
             return smaTs;
         }
 
@@ -137,7 +136,6 @@ namespace Frontend.Models.Timeseries {
                 double dt = (_timestamps[i] - _timestamps[i - 1]).Days;
                 ewmaTs._values[i] = ewma.GetUpdate(dt, _values[i]);
             }
-            _indicator = "ewma";
             return ewmaTs;
         }
 
