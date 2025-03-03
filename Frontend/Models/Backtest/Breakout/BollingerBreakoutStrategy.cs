@@ -26,7 +26,7 @@ namespace Frontend.Models.Backtest.Breakout {
         // Last price + Last timestamp
 
         private DateTime _firstTimestamp = DateTime.MaxValue;
-        private DateTime? _lastTimestamp = null;
+        private DateTime? _previousTimestamp = null;
         private double _lastPrice = double.NaN;
         private double _signal = 0;
         private double _targetPosition = 0;
