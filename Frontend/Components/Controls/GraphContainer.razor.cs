@@ -17,39 +17,60 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedIndicator { get; set; }
 
-        private List<string> _selectedIndicatorList = new List<string>();
-
-        protected override void OnParametersSet() {
-            if (!string.IsNullOrEmpty(SelectedIndicator)) {
-                if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
-                    if (_selectedIndicatorList.Contains(SelectedIndicator)) {
-                        _selectedIndicatorList.Remove(SelectedIndicator);
-                        UpdateIndicatorTs(TimeseriesParam, SelectedIndicator, false);
-                    } else {
-                        _selectedIndicatorList.Add(SelectedIndicator);
-                        UpdateIndicatorTs(TimeseriesParam, SelectedIndicator, true);
-                    }
-                }
-
-                StateHasChanged();
-            }
-        }
-
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }
         private string? Timespan { get; set; }
         private DateTime DateFrom { get; set; }
         private DateTime DateTo { get; set; }
 
+        private string? _currentSecurity;
         private PolygonStockPriceData? polygonStockPriceData;
         private string symbol = string.Empty;
         private List<Result>? results;
         private TS _localTimeseries = new();
         private Dictionary<string, List<TS>> _indicatorCache = new();
+        private List<string> _selectedIndicatorList = new List<string>();
 
         //private List<TS> TimeseriesParam = new(); //Parameters to pass on to GraphComponent
         private TS TimeseriesParam = new();
         private List<TS> IndicatorTSParameter = new();
+
+        protected override async Task OnParametersSetAsync() {
+            if (!string.IsNullOrEmpty(SelectedIndicator)) {
+                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
+                    _selectedIndicatorList.Remove(SelectedIndicator);
+                } else {
+                    _selectedIndicatorList.Add(SelectedIndicator);
+                }
+            }
+
+            if (SelectedSecurity != _currentSecurity) {
+                _currentSecurity = SelectedSecurity;
+
+                symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
+                if (!string.IsNullOrEmpty(symbol)) {
+                    TimeseriesParam = await ReadFromDatabase();
+                }
+
+                _indicatorCache.Clear();
+            }
+
+            RebuildIndicatorTsParameter();
+
+            StateHasChanged();
+        }
+
+        private void RebuildIndicatorTsParameter() {
+            IndicatorTSParameter.Clear();
+
+            foreach (string indicator in _selectedIndicatorList) {
+                if (!_indicatorCache.ContainsKey(indicator)) {
+                    _indicatorCache[indicator] = GenerateIndicatorTS(TimeseriesParam, indicator);
+                }
+
+                IndicatorTSParameter.AddRange(_indicatorCache[indicator]);
+            }
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender) {
             if (firstRender) {
@@ -136,23 +157,6 @@ namespace Frontend.Components.Controls {
 
             //return new List<TS> { openPxTimeseries, closePxTimeseries };
             return closePxTimeseries;
-        }
-
-        
-
-        private void UpdateIndicatorTs(TS originalTs, string indicator, bool addIndicator) {
-            if (originalTs == null || originalTs.Size() == 0) return;
-
-            if (addIndicator) {
-                if (!_indicatorCache.ContainsKey(indicator)) {
-                    _indicatorCache[indicator] = GenerateIndicatorTS(originalTs, indicator);
-                }
-                IndicatorTSParameter.AddRange(_indicatorCache[indicator]);
-            } else {
-                if (_indicatorCache.ContainsKey(indicator)) {
-                    IndicatorTSParameter.RemoveAll(ts => _indicatorCache[indicator].Contains(ts));
-                }
-            }
         }
 
         private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
