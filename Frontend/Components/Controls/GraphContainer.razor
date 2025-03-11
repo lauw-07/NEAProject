@@ -51,6 +51,10 @@
                     <span class="option-text">@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
                 </div>
                 <div class="option">
+                    <span class="option-text-title">Security:</span>
+                    <span class="option-text">@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
+                </div>
+                <div class="option">
                     <span class="option-text-title">Indicators:</span>
                     <div class="indicator-list">
                         @foreach (string indicator in _selectedIndicatorList) {
