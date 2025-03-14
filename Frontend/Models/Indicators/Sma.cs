@@ -20,7 +20,7 @@ namespace Frontend.Models.Indicators {
             if (window.Count > WindowSize) {
                 sum -= window.Dequeue();
             }
-            currentMa = sum / window.Count;
+            currentMa = Math.Round(sum / window.Count, 2);
             return (T)(object)currentMa;
         }
 
