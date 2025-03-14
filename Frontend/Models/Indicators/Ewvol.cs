@@ -15,6 +15,7 @@ namespace Frontend.Models.Indicators {
         public override void Update(double dt, double value) {
             decay = Math.Pow(unitDecay, dt);
             if (useMean) {
+                // Use ewma formula but adapted for volatility
                 currentMa = decay * currentMa + (1 - decay) * value;
                 vv = decay * vv + (1 - decay) * Math.Pow(value - currentMa, 2);
             } else {
@@ -45,7 +46,7 @@ namespace Frontend.Models.Indicators {
         }
 
         public double GetVol() {
-            return Math.Sqrt(vv);
+            return Math.Round(Math.Sqrt(vv), 2);
         }
     }
 }

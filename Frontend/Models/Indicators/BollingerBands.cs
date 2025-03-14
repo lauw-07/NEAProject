@@ -7,6 +7,7 @@ namespace Frontend.Models.Indicators {
         private Queue<double> values = new Queue<double>();
         private double _upperBand = double.NaN;
         private double _lowerBand = double.NaN;
+
         private double width;
 
         public BollingerBands(int windowSize, double width) : base() {
@@ -37,8 +38,8 @@ namespace Frontend.Models.Indicators {
 
                 double std = Math.Sqrt(variance);
 
-                _upperBand = ma + width * std;
-                _lowerBand = ma - width * std;
+                _upperBand = Math.Round(ma + width * std, 2);
+                _lowerBand = Math.Round(ma - width * std, 2);
             }
             return (T)(object)(_upperBand, _lowerBand);
         }
