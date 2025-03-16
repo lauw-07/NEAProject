@@ -37,8 +37,8 @@ namespace Frontend.Models.Timeseries {
             if (timestamps.Count != values.Count)
                 return;
 
-            _timestamps = timestamps;
-            _values = values;
+            _timestamps = new List<DateTime>(timestamps);
+            _values = new List<double>(values);
         }
 
         public void Add(DateTime timestamp, double value) {

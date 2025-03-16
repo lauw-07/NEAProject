@@ -19,8 +19,8 @@
             if (_window.Count > WindowSize) {
                 _sum -= _window.Dequeue();
             }
-            currentMa = sum / window.Count;
-            return (T)(object)currentMa;
+            _currentMa = Math.Round(_sum / _window.Count, 2);
+            return (T)(object)_currentMa;
         }
 
         //extra functionalities if required

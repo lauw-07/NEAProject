@@ -5,11 +5,11 @@
         private Queue<double> _values = new Queue<double>();
         private double _upperBand = double.NaN;
         private double _lowerBand = double.NaN;
-        private double _width;
+        private double _width = double.NaN;
 
         public BollingerBands(int windowSize, double width) : base() {
             _reference = new Sma(windowSize);
-            this._width = width;
+            _width = width;
 
             _name = "Bollinger Bands";
         }
@@ -23,7 +23,7 @@
             _ma = _reference.Update<double>(value);
 
             // calculate std
-            // variance formula: _sum of [ (x - x bar) ^ 2 ] / n
+            // variance formula: sum of [ (x - x bar) ^ 2 ] / n
             if (_values.Count > 0) {
                 double variance = 0;
                 double sum = 0;
@@ -35,8 +35,8 @@
 
                 double std = Math.Sqrt(variance);
 
-                _upperBand = ma + width * std;
-                _lowerBand = ma - width * std;
+                _upperBand = Math.Round(_ma + _width * std, 2);
+                _lowerBand = Math.Round(_ma - _width * std, 2);
             }
             return (T)(object)(_upperBand, _lowerBand);
         }
