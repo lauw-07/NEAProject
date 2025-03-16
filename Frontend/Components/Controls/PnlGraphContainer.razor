@@ -16,6 +16,18 @@
         }
     </div>
 
+    <div class="guidance">
+        <p>
+            Ticker: This is essentially the stock whose price data you want to apply this strategy to <br /><br />
+            Window Size: This specifies the size of the rolling window in the Bollinger Bands indicator.
+            The larger the window, the smoother the Bollinger Bands and so less reactive to changes in price.<br /><br />
+            Width: This specifies how many standard deviations away from the average the upper and lower bands of the Bollinger Bands should be.<br /><br />
+            Exposure Type: This references what type of exposure to use. Currently, i only have options for Fixed Value or Fixed Share exposure.<br /><br />
+            Exposure Value: This specifies how large you want the exposure. The larger the exposure, the larger the possible gains but also the larger the possible loss.<br /><br />
+            Exit Type: Since for this strategy it uses Bollinger Bands, in this case the exit type would be exit at the reference value or exit at the opposite band. Exiting at the reference value could theoretically lower your profits but it could be less risky.
+        </p>
+    </div>
+
     <div class="pnl-loader">
         <button class="pnl-loader-btn" @onclick="GeneratePnlGraph">Generate P&L</button>
     </div>

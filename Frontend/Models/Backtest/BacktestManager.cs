@@ -1,7 +1,5 @@
 ﻿using Frontend.Models.Backtest.Breakout;
-using Frontend.Models.Database;
 using Frontend.Models.Timeseries;
-using System.Diagnostics.Metrics;
 using Instrument = Frontend.Models.Database.Instrument;
 
 namespace Frontend.Models.Backtest {
@@ -32,6 +30,7 @@ namespace Frontend.Models.Backtest {
         public TS RunBacktest(List<StrategyInput> inputs) {
             if (_strategy == null) return new TS();
 
+            // Get target positions for each timestamp in the timeseries
             TS targetPositions = _strategy.Update(inputs);
             _targetPositions = targetPositions.GetValues();
             _timestamps = targetPositions.GetTimestamps();
@@ -40,11 +39,7 @@ namespace Frontend.Models.Backtest {
                 _prices.Add(input.GetClosePrice());
             }
 
-            /*_targetPositions.Add(_strategy.GetTargetPosition());
-            _timestamps.Add(inputs.GetTimestamp());
-            _prices.Add(inputs.GetClosePrice());*/
-
-
+            // Calculate PNL based on the target positions and the corresponding close prices
             PnLHandler pnLHandler = new PnLHandler();
             TS pnlTs = pnLHandler.CalculatePnl(_instrument, _targetPositions, _timestamps, _prices);
             return pnlTs;

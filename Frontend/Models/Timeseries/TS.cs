@@ -1,12 +1,4 @@
 ﻿using Frontend.Models.Indicators;
-using Microsoft.AspNetCore.Server.HttpSys;
-using Newtonsoft.Json.Linq;
-using Syncfusion.Blazor.Charts.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontend.Models.Timeseries {
     public class TS {
@@ -138,10 +130,6 @@ namespace Frontend.Models.Timeseries {
             }
             return ewmaTs;
         }
-
-        /*public bool RemoveIndicator(string indicator) {
-            return _currentIndicators.Remove(indicator);
-        }*/
 
         public TS Ewvol(double halfLife) {
             return Ewvol(halfLife, double.NaN, true);

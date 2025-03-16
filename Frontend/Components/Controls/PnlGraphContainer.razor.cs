@@ -38,7 +38,7 @@ namespace Frontend.Components.Controls {
                 case "Exposure Type":
                     return new List<string>() { "Fixed Value", "Fixed Share" };
                 case "Exposure":
-                    return new List<string>() { "20", "50", "80", "200", "1000", "2000" }; // these values are just for testing (i think i will enable the user to type their input for this parameter
+                    return new List<string>() { "20", "50", "80", "200", "1000", "2000" }; // these _values are just for testing (i think i will enable the user to type their input for this parameter
                 case "Exit Type":
                     return new List<string>() { "At Opposite", "At Reference" };
                 default:

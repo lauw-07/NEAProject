@@ -65,7 +65,11 @@ namespace Frontend.Models.Backtest {
 
             isClose = Math.Sign(delta) * Math.Sign(position.GetQuantity()) < 0; // if negative, then it is a closing trade
             if (isClose) {
+                // Calculate new update exposure
                 exposure = position.GetExposure() * (quantity / position.GetQuantity());
+
+                // Calculate new pnl
+                // Subtracting here because if trading close, there will be a negative quantity hence a negative exposure
                 closePnl = position.GetClosePnl() - (unitExposure - position.GetUnitExposure()) * delta;
             } else {
                 exposure = position.GetExposure() + delta * unitExposure;

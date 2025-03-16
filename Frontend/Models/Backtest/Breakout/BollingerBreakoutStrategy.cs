@@ -150,7 +150,7 @@ namespace Frontend.Models.Backtest.Breakout {
         }
     }
 
-    // exit when reaches reference price (i.e. price of the Moving average at a certain timestamp)
+    // exit when reaches _reference price (i.e. price of the Moving average at a certain timestamp)
     public class BollingerExitAtReference : BollingerExitManager {
         public BollingerExitAtReference(BollingerBands bollingerBands) : base(bollingerBands) {
         }

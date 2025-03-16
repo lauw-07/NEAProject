@@ -6,9 +6,11 @@ namespace Frontend.Models.Backtest {
         public PnLHandler() {
 
         }
-
         public TS CalculatePnl(Instrument instrument, List<double> targetPositions, List<DateTime> timestamps, List<double> prices) {
+            // Hold all the PNLs at each timestamp
             TS pnlTs = new TS();
+
+            // Create instance of a position object which can hold a value for the running PNL
             Position position = new Position(instrument);
 
             if (targetPositions.Count != prices.Count || targetPositions.Count != timestamps.Count || targetPositions.Count <= 1) {
@@ -17,6 +19,7 @@ namespace Frontend.Models.Backtest {
 
             position.Add(targetPositions[0], timestamps[0], prices[0]);
             for (int i = 1; i < targetPositions.Count; i++) {
+                // Calculate change in quantity of position
                 double delta = targetPositions[i] - position.GetQuantity();
                 DateTime timestamp = timestamps[i];
                 double price = prices[i];

@@ -1,14 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
 namespace Frontend.Models.Database {
-
-    /*public enum DatabaseObject {
-        Instruments,
-        PriceData,
-        TradingStrategies,
-        StrategyResults
-    }*/
-
     public class DatabaseHandler {
         private string _connectionString;
 

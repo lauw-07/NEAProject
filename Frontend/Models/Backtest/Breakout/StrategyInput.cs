@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Frontend.Models.Backtest.Breakout {
+﻿namespace Frontend.Models.Backtest.Breakout {
     public class StrategyInput {
         private Dictionary<string, object> _inputs = new Dictionary<string, object>();
 

@@ -18,3 +18,12 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+
+.guidance {
+    display: flex;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    width: 80%;
+    margin-bottom: 10px;
+}

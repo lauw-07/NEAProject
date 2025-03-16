@@ -1,9 +1,4 @@
 ﻿using Frontend.Models.Timeseries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Frontend.Models.Backtest.Breakout {
     public enum BaseStrategyFields {
@@ -12,7 +7,6 @@ namespace Frontend.Models.Backtest.Breakout {
     }
 
     public abstract class StrategyBase {
-        //protected StrategyType type;
         protected StrategyParams StrategyParams { get; set; }
 
         public StrategyBase(StrategyParams strategyParams) {

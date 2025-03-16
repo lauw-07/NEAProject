@@ -1,50 +1,48 @@
-﻿using Syncfusion.Blazor.Charts.Internal;
-
-namespace Frontend.Models.Indicators {
+﻿namespace Frontend.Models.Indicators {
     public class BollingerBands : IndicatorBase {
-        private readonly Sma reference;
-        private double ma = double.NaN;
-        private Queue<double> values = new Queue<double>();
+        private readonly Sma _reference;
+        private double _ma = double.NaN;
+        private Queue<double> _values = new Queue<double>();
         private double _upperBand = double.NaN;
         private double _lowerBand = double.NaN;
-        private double width;
+        private double _width;
 
         public BollingerBands(int windowSize, double width) : base() {
-            reference = new Sma(windowSize);
-            this.width = width;
+            _reference = new Sma(windowSize);
+            this._width = width;
 
             _name = "Bollinger Bands";
         }
 
         public override T Update<T>(double value) {
-            values.Enqueue(value);
-            if (values.Count > reference.GetWindowSize()) {
-                values.Dequeue();
+            _values.Enqueue(value);
+            if (_values.Count > _reference.GetWindowSize()) {
+                _values.Dequeue();
             }
 
-            ma = reference.Update<double>(value);
+            _ma = _reference.Update<double>(value);
 
             // calculate std
-            // variance formula: sum of [ (x - x bar) ^ 2 ] / n
-            if (values.Count > 0) {
+            // variance formula: _sum of [ (x - x bar) ^ 2 ] / n
+            if (_values.Count > 0) {
                 double variance = 0;
                 double sum = 0;
-                foreach (double val in values) {
-                    sum += Math.Pow(val - ma, 2);
+                foreach (double val in _values) {
+                    sum += Math.Pow(val - _ma, 2);
                 }
 
-                variance = sum / values.Count;
+                variance = sum / _values.Count;
 
                 double std = Math.Sqrt(variance);
 
-                _upperBand = ma + width * std;
-                _lowerBand = ma - width * std;
+                _upperBand = Math.Round(_ma + _width * std, 2);
+                _lowerBand = Math.Round(_ma - _width * std, 2);
             }
             return (T)(object)(_upperBand, _lowerBand);
         }
 
         public double GetReference() {
-            return reference.GetMa();
+            return _reference.GetMa();
         }
 
         public double GetUpperBand() {
