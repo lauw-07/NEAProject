@@ -24,7 +24,7 @@ namespace Frontend.Models.Indicators {
             decay = Math.Pow(unitDecay, dt);
 
             // calculate new ma and store it in the currentMa
-            currentMa = decay * currentMa + (1 - decay) * value;
+            currentMa = Math.Round(decay * currentMa + (1 - decay) * value, 2);
         }
 
         public override void Update(TS values) {

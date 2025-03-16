@@ -35,8 +35,8 @@
 
                 double std = Math.Sqrt(variance);
 
-                _upperBand = Math.Round(_ma + _width * std, 2);
-                _lowerBand = Math.Round(_ma - _width * std, 2);
+                _upperBand = ma + width * std;
+                _lowerBand = ma - width * std;
             }
             return (T)(object)(_upperBand, _lowerBand);
         }

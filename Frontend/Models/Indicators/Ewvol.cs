@@ -45,7 +45,7 @@ namespace Frontend.Models.Indicators {
         }
 
         public double GetVol() {
-            return Math.Round(Math.Sqrt(_vv), 2);
+            return Math.Sqrt(vv);
         }
     }
 }

@@ -112,7 +112,7 @@ namespace Frontend.Models.Timeseries {
             TS smaTs = CopyTs();
 
             for (int i = 0; i < _timestamps.Count; i++) {
-                smaTs._values[i] = sma.Update<double>(smaTs._values[i]);
+                smaTs._values[i] = sma.Update<double>(_values[i]);
             }
             return smaTs;
         }

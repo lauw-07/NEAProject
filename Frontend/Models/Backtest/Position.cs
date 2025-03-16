@@ -86,7 +86,7 @@ namespace Frontend.Models.Backtest {
 
         public double GetPnl(double price) {
             double openPnl = price * GetQuantity() - GetExposure();
-            return GetClosePnl() + openPnl;
+            return Math.Round(GetClosePnl() + openPnl, 2);
         }
     }
 }
