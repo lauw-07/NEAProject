@@ -1,28 +1,30 @@
 ﻿using Frontend.Models.Timeseries;
+using Syncfusion.Blazor.Charts.Internal;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Frontend.Models.Indicators {
     public class Ewma : IndicatorBase {
 
-        //initialise _values with their default _values
-        protected double _currentMa = double.NaN;
-        protected double _decay = double.NaN;
-        protected readonly double _unitDecay = double.NaN;
+        //initialise values with their default values
+        protected double currentMa = double.NaN;
+        protected double decay = double.NaN;
+        protected readonly double unitDecay = double.NaN;
 
         public double HalfLife { get; set; }
         public double Seed { get; set; } // the seed is the first value of the timeseries that we are working with
         public Ewma(double halfLife, double seed) : base() {
             HalfLife = halfLife;
-            _unitDecay = Math.Pow(2, -1 / halfLife);
-            _currentMa = seed;
+            unitDecay = Math.Pow(2, -1 / halfLife);
+            currentMa = seed;
             _name = "Exponentially Weighted Moving Average";
         }
 
         public override void Update(double dt, double value) {
-            // ensure that the _decay is scaled based on dt
-            _decay = Math.Pow(_unitDecay, dt);
+            // ensure that the decay is scaled based on dt
+            decay = Math.Pow(unitDecay, dt);
 
-            // calculate new _ma and store it in the _currentMa
-            _currentMa = Math.Round(_decay * _currentMa + (1 - _decay) * value, 2);
+            // calculate new ma and store it in the currentMa
+            currentMa = decay * currentMa + (1 - decay) * value;
         }
 
         public override void Update(TS values) {
@@ -48,7 +50,7 @@ namespace Frontend.Models.Indicators {
         }
 
         public double GetCurrentMa() {
-            return _currentMa;
+            return currentMa;
         }
     }
 }
