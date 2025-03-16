@@ -1,11 +1,8 @@
-﻿using Frontend.Models.Timeseries;
-using Syncfusion.Blazor.Charts.Internal;
-
-namespace Frontend.Models.Indicators {
+﻿namespace Frontend.Models.Indicators {
     public class Sma : IndicatorBase {
-        private Queue<double> window = new Queue<double>();
-        private double sum = 0;
-        private double currentMa = double.NaN;
+        private Queue<double> _window = new Queue<double>();
+        private double _sum = 0;
+        private double _currentMa = double.NaN;
 
         private int WindowSize { get; set; }
 
@@ -15,18 +12,20 @@ namespace Frontend.Models.Indicators {
         }
 
         public override T Update<T>(double value) {
-            sum += value;
-            window.Enqueue(value);
-            if (window.Count > WindowSize) {
-                sum -= window.Dequeue();
+            _sum += value;
+            _window.Enqueue(value);
+
+            // Maintain the rolling _window by removing first item in queue
+            if (_window.Count > WindowSize) {
+                _sum -= _window.Dequeue();
             }
-            currentMa = sum / window.Count;
-            return (T)(object)currentMa;
+            _currentMa = Math.Round(_sum / _window.Count, 2);
+            return (T)(object)_currentMa;
         }
 
         //extra functionalities if required
         public double GetMa() {
-            return currentMa;
+            return _currentMa;
         }
 
         public int GetWindowSize() {
@@ -34,9 +33,9 @@ namespace Frontend.Models.Indicators {
         }
 
         public void Clear() {
-            window.Clear();
-            sum = 0;
-            currentMa = double.NaN;
+            _window.Clear();
+            _sum = 0;
+            _currentMa = double.NaN;
         }
     }
 }
