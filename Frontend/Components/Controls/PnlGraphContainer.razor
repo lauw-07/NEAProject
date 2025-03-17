@@ -4,8 +4,6 @@
             <div>
                 <label>@param</label>
 
-                <!--TODO: Allow user to type an input for certain options-->
-
                 <InputSelect @bind-Value="_selectedParams[param]" @onchange="(e => SelectParameter(param, e.Value.ToString()))">
                     <option value="">Select @param</option>
                     @foreach (var option in GetStrategyParameters(param)) {

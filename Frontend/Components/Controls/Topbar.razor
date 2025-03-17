@@ -3,28 +3,6 @@
 <section id="topBar">
     <div class="small-container">
         <div class="instrumentList">
-            <!--@foreach(Instrument instrument in instruments) {
-                <ul>@instrument.InstrumentName (@instrument.InstrumentSymbol)</ul>
-            }-->
-            <!--Temp Code
-
-                I can create a Razor component for this dropdown menu
-
-                Maybe add a pop up notification for the instruments which i have not got data for
-            
-            <div class="popout-menu">
-                <div class="popout-toggle">
-                    <span>See More</span>
-                    <span class="e-icons e-chevron-right"></span>
-                </div>
-                <div class="menu-content">
-                    @foreach (string indicator in _extraTradingIndicators) {
-                        <div class="indicator" @onclick="() => SelectIndicator(indicator)">@indicator</div>
-                    }
-                </div>
-            </div>
-            -->
-
             <div class="dropdown-menu">
                 <div class="select-btn">
                     <span class="selectBtn-text">Instruments</span>
@@ -40,7 +18,6 @@
                                 <div class="menu-content topbar-menu-content">
                                     @foreach (string security in _availableSecurities) {
                                         <div class="indicator" @onclick="() => SelectSecurity(security)">@security</div>
-                                        //the class "indicator" is a bit too specific, maybe look and try change all occurences to something more generic
                                     }
 
                                     @if (_availableSecurities.Count == 0) {
@@ -54,7 +31,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="small-container">
