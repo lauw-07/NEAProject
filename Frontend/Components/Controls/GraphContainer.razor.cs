@@ -7,15 +7,10 @@ using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
     public partial class GraphContainer {
-
         [Parameter]
         public string? SelectedInstrument { get; set; }
-
         [Parameter]
         public string? SelectedSecurity { get; set; }
-
-        [Parameter]
-        public string? SelectedIndicator { get; set; }
 
         private string? Ticker { get; set; }
         private int Multiplier { get; set; }
@@ -42,27 +37,53 @@ namespace Frontend.Components.Controls {
                 if (!string.IsNullOrEmpty(symbol)) {
                     TimeseriesParam = await ReadFromDatabase();
                 }
-                // Clear the list and cache when a new stock is selected.
+                // Clear indicator state when a new stock is selected.
                 _selectedIndicatorList.Clear();
                 _indicatorCache.Clear();
             }
+            RebuildIndicatorTsParameter();
+        }
 
-            // Process the indicator parameter only if it exists
+        // method to toggle an indicator which gets called from a parent component
+        public void ToggleIndicator(string indicator) {
             // Remove indicator if exists and add if not exists
-            if (!string.IsNullOrEmpty(SelectedIndicator)) {
-                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
-                    _selectedIndicatorList.Remove(SelectedIndicator);
-                } else {
-                    _selectedIndicatorList.Add(SelectedIndicator);
-                }
-                // Reset the SelectedIndicator parameter so the toggle only occurs once
-                SelectedIndicator = null;
+            if (_selectedIndicatorList.Contains(indicator)) {
+                _selectedIndicatorList.Remove(indicator);
+                _indicatorCache.Remove(indicator);
+            } else {
+                _selectedIndicatorList.Add(indicator);
             }
-
             RebuildIndicatorTsParameter();
             StateHasChanged();
         }
 
+        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
+            switch (indicator) {
+                case "Simple Moving Average":
+                    TS smaTs = closePxTs.Sma(20);
+                    smaTs.SetIndicator("Sma");
+                    return new List<TS> { smaTs };
+                case "Exponentially Weighted Moving Average":
+                    TS ewmaTs = closePxTs.Ewma(20);
+                    ewmaTs.SetIndicator("Ewma");
+                    return new List<TS> { ewmaTs };
+                case "Bollinger Bands":
+                    (TS, TS) bollingerBands = closePxTs.BollingerBands(20, 2);
+                    TS upperBound = bollingerBands.Item1;
+                    upperBound.SetIndicator("Bollinger Bands Upper Band");
+                    TS lowerBound = bollingerBands.Item2;
+                    lowerBound.SetIndicator("Bollinger Bands Lower Band");
+                    return new List<TS> { upperBound, lowerBound };
+                case "Exponential Weighted Volatility":
+                    TS ewvolTs = closePxTs.Ewvol(20);
+                    ewvolTs.SetIndicator("Ewvol");
+                    return new List<TS> { ewvolTs };
+                default:
+                    return new List<TS>();
+            }
+        }
+
+        // Clear the timeseries parameters and rebuild all the parameters
         private void RebuildIndicatorTsParameter() {
             IndicatorTSParameter.Clear();
 
@@ -88,7 +109,6 @@ namespace Frontend.Components.Controls {
                 StateHasChanged();
             }
         }
-
         private async Task FetchData() {
             await LoadData();
             await SaveToDatabase();
@@ -141,64 +161,17 @@ namespace Frontend.Components.Controls {
         private async Task<TS> ReadFromDatabase() {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(symbol);
             int initialCapacity = priceData.Count;
-
-            //TS openPxTimeseries = new TS(initialCapacity);
             TS closePxTimeseries = new TS(initialCapacity);
 
-            /*
-             * Each price data object contains single prices related to a single timestamp
-             */
+            // Each price data object contains single prices related to a single timestamp
 
             foreach (PriceData priceDataObj in priceData) {
                 double openPx = priceDataObj.OpenPx;
                 double closePx = priceDataObj.ClosePx;
                 DateTime pxDate = priceDataObj.PxDate;
-
-                //openPxTimeseries.Add(pxDate, openPx);
                 closePxTimeseries.Add(pxDate, closePx);
             }
-
-            //return new List<TS> { openPxTimeseries, closePxTimeseries };
             return closePxTimeseries;
         }
-
-        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
-            //TS openPxTS = originalTs[0];
-            //TS closePxTS = originalTs[1];
-
-            switch (indicator) {
-                case "Simple Moving Average":
-                    TS smaTs = closePxTs.Sma(20);
-                    smaTs.SetIndicator("Sma");
-                    return new List<TS> { /*openPxTS.Sma(20),*/ smaTs };
-                case "Exponentially Weighted Moving Average":
-                    TS ewmaTs = closePxTs.Ewma(20);
-                    ewmaTs.SetIndicator("Ewma");
-                    return new List<TS> { /*openPxTS.Ewma(20),*/ ewmaTs };
-                case "Bollinger Bands":
-                    (TS,TS) bollingerBands = closePxTs.BollingerBands(20, 2);
-                    TS upperBound = bollingerBands.Item1;
-                    upperBound.SetIndicator("Bollinger Bands Upper Band");
-                    TS lowerBound = bollingerBands.Item2;
-                    lowerBound.SetIndicator("Bollinger Bands Lower Band");
-                    return new List<TS> { upperBound, lowerBound };
-                case "Exponential Weighted Volatility":
-                    TS ewvolTs = closePxTs.Ewvol(20);
-                    ewvolTs.SetIndicator("Ewvol");
-                    return new List<TS> { ewvolTs };
-                default:
-                    return new List<TS>();
-            }
-        }
-
-
-        /* Store this new data into the database (however i haven't validated whether the database already contains this new data loaded)
-         * Read all the data relating to the specific Ticker passed in from the input from the database
-         * Convert data into a timeseries
-         * Create two timeseries for opening and closing price
-         * Store this in the data variable and pass this through as a parameter to the graph component
-         * 
-         * I will also need to update the database with new instruments and new price data
-         */
     }
 }
