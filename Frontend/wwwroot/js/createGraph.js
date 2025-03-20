@@ -1,12 +1,14 @@
 ﻿const margin = { top: 70, right: 70, bottom: 70, left: 70 }
 
 function GetDimensions(divId) {
+    // Get dimensions of the parent div element to create the svg element
     const width = parseInt(d3.select(`#${divId}`).style('width')) - margin.left - margin.right;
     const height = parseInt(d3.select(`#${divId}`).style('height')) - margin.top - margin.bottom;
     return { width, height }
 };
 
 function CreateXScale(timestamps, width) {
+    // Create a time scale for the x-axis
     const padding = 20;
 
     return d3.scaleTime()
@@ -15,12 +17,14 @@ function CreateXScale(timestamps, width) {
 };
 
 function CreateYScale(values, height) {
+    // Create a linear scale for the y-axis for the values of the price data
     return d3.scaleLinear()
         .domain(d3.extent(values))
         .range([height, 0]);
 };
 
 function CreateYGridlines(svg, x, height) {
+    // Create vertical gridlines that run across the graph in the background
     svg.selectAll("verticalGrid")
         .data(x.ticks())
         .join("line")
@@ -33,6 +37,7 @@ function CreateYGridlines(svg, x, height) {
 };
 
 function CreateXGridlines(svg, y, width, padding) {
+    // create the horizontal gridlines
     svg.selectAll("horizontalGrid")
         .data(y.ticks())
         .join("line")
@@ -44,6 +49,7 @@ function CreateXGridlines(svg, y, width, padding) {
         .attr("stroke-width", 0.25)
 };
 
+// Drawing the actual x and y axis
 function CreateXAxis(svg, x, height) {
     const xAxis = d3.axisBottom(x)
         .ticks(d3.timeMonth.every(3))
@@ -90,6 +96,7 @@ function SetUpGraph(svg, x, y, height, width, pos, hasPnl) {
 };
 
 function CreateTooltip() {
+    // The tooltip is essentially a box that appears when the mouse hovers over a data point and shows the value of the data point
     return d3.select("body").append("div")
         .attr("class", "tooltip");
 };
@@ -144,13 +151,18 @@ function UpdateCrosshair(event, tooltip, svg, height, width, xScale, dataset) {
 
     //Ts = timestamp
     // example dataset: { "IndicatorTs" : [{ "Timestamps" : [ 1230912, 1230912, 1230912, 1230912 ] }, { "Values" : [ 123, 123, 123, 123 ] } ]}
+
+    // Find the closest timestamp on the x axis to the position of the mouse
     const mouseTs = xScale.invert(mouseXcoord);
     let closestValues = {};
 
     Object.entries(dataset).forEach(([label, data]) => {
+        // As dataset is a dictionary who's values are also dictionaries, we need to loop through each key-value pair and then access the timestamps and values
+        // from the value of the key-value pair (which is a dictionary)
         const timestamps = data["timestamps"].map(ts => d3.timeParse("%d/%m/%Y")(ts));
         const values = data["values"];
 
+        // Reduce function finds the ideal index by comparing distances between timestamps and the mouseTs
         const closestIndex = timestamps.reduce((prev, curr, index) => {
             if (Math.abs(curr - mouseTs) < Math.abs(timestamps[prev] - mouseTs)) {
                 return index;
@@ -175,7 +187,8 @@ function UpdateCrosshair(event, tooltip, svg, height, width, xScale, dataset) {
 function DrawGraph(datasets, divId) {
     const { width, height } = GetDimensions(divId);
 
-    //To create new instances of the svg component so that it can be updated with new dimensions
+    // Create new instances of the svg component so that it can be updated
+    // with new dimensions
     d3.select(`#${divId}`).selectAll("*").remove();
 
     const svg = d3.select(`#${divId}`)
@@ -185,6 +198,7 @@ function DrawGraph(datasets, divId) {
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    // Setting up the graphs based on what is in the dataset
     const pnlData = datasets["P&L"] ? datasets["P&L"] : null;
     let priceData = {};
 
@@ -231,6 +245,8 @@ function DrawGraph(datasets, divId) {
     const tooltip = CreateTooltip();
     const crosshair = CreateCrosshair(svg);
 
+    // Monitors when the mouse hovers over the graph and triggers the 
+    // crosshair and tooltip updates
     svg.append("rect")
         .attr("width", width)
         .attr("height", height)

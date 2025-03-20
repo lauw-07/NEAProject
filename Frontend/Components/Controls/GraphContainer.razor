@@ -66,10 +66,6 @@
         </div>
     </div>
 
-    <!--Maybe add paramters into the graph component depending on what the user wants
-        This would also mean that a parameter needs to be passed in from inputs made in the topbar component as well as the sidebar component
-    -->
-
     @if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
         <Graph
             Timeseries="@TimeseriesParam" 
