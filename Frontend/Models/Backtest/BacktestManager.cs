@@ -21,7 +21,7 @@ namespace Frontend.Models.Backtest {
 
         public void SetStrategy(Type strategyType, StrategyParams strategyParams, Instrument instrument) {
             if (typeof(BollingerBreakoutStrategy).IsAssignableFrom(strategyType)) {
-                // e.g. BollingerBreakoutStrategy#
+                // e.g. BollingerBreakoutStrategy
                 _instrument = instrument;
                 _strategy = new BollingerBreakoutStrategy(strategyParams);
             }

@@ -29,7 +29,6 @@ namespace Frontend.Components.Controls {
         private Dictionary<string, List<TS>> _indicatorCache = new();
         private List<string> _selectedIndicatorList = new List<string>();
 
-        //private List<TS> TimeseriesParam = new(); //Parameters to pass on to GraphComponent
         private TS TimeseriesParam = new();
         private List<TS> IndicatorTSParameter = new();
 
@@ -45,12 +44,21 @@ namespace Frontend.Components.Controls {
 
             if (SelectedSecurity != _currentSecurity) {
                 _currentSecurity = SelectedSecurity;
-
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
                 if (!string.IsNullOrEmpty(symbol)) {
                     TimeseriesParam = await ReadFromDatabase();
                 }
-                _indicatorCache.Clear();
+
+            // Process the indicator parameter only if it exists
+            // Remove indicator if exists and add if not exists
+            if (!string.IsNullOrEmpty(SelectedIndicator)) {
+                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
+                    _selectedIndicatorList.Remove(SelectedIndicator);
+                } else {
+                    _selectedIndicatorList.Add(SelectedIndicator);
+                }
+                // Reset the SelectedIndicator parameter so the toggle only occurs once
+                SelectedIndicator = null;
             }
 
             // This should be called here since a parameter has to have been set and there are only two parameters so this 
