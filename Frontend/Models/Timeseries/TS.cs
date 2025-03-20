@@ -69,20 +69,12 @@ namespace Frontend.Models.Timeseries {
 
         public int Size() { return _timestamps.Count; }
 
-        public double GetLastValue() {
-            return _values[_values.Count - 1];
-        }
+        public double GetLastValue() { return _values[_values.Count - 1]; }
 
-        public DateTime GetLastTime() {
-            return _timestamps[_timestamps.Count - 1];
-        }
+        public DateTime GetLastTime() { return _timestamps[_timestamps.Count - 1]; }
 
-        public void SetIndicator(string indicator) {
-            _indicator = indicator;
-        }
-        public string GetIndicator() {
-            return _indicator;
-        }
+        public void SetIndicator(string indicator) { _indicator = indicator; }
+        public string GetIndicator() { return _indicator; }
         public override bool Equals(object? obj) {
             if (obj is TS other) {
                 return _indicator == other._indicator &&
@@ -92,18 +84,14 @@ namespace Frontend.Models.Timeseries {
             return false;
         }
 
-        public bool IsEmpty() {
-            return (_timestamps.Count == 0 || _values.Count == 0);
-        }
+        public bool IsEmpty() { return (_timestamps.Count == 0 || _values.Count == 0); }
 
         public void Clear() {
             _timestamps.Clear();
             _values.Clear();
         }
 
-        public TS CopyTs() {
-            return new TS(this);
-        }
+        public TS CopyTs() { return new TS(this); }
 
         public TS Sma(int n) {
             if (_values.Count == 0) return new TS();
@@ -144,7 +132,6 @@ namespace Frontend.Models.Timeseries {
             if (_values.Count == 0) return new TS();
 
             Ewvol ewvol = new Ewvol(halfLife, double.IsNaN(seedVol) ? _values[0] : seedVol, useMean ? _values[0] : double.NaN);
-
             TS ewvolTs = CopyTs();
 
             double initialSeed = double.IsNaN(seedVol) ? (useMean ? 0 : _values[0]) : seedVol;
@@ -154,7 +141,6 @@ namespace Frontend.Models.Timeseries {
                 double dt = (_timestamps[i] - _timestamps[i - 1]).Days;
                 ewvolTs._values[i] = ewvol.GetUpdate(dt, _values[i]);
             }
-
             return ewvolTs;
         }
 

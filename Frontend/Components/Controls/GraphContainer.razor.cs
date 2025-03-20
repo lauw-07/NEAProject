@@ -30,7 +30,15 @@ namespace Frontend.Components.Controls {
         private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnParametersSetAsync() {
-            // When the stock changes, reset the selected indicator list and indicator cache.
+            // This method is only triggered when a parameter is set
+            if (!string.IsNullOrEmpty(SelectedIndicator)) {
+                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
+                    _selectedIndicatorList.Remove(SelectedIndicator);
+                } else {
+                    _selectedIndicatorList.Add(SelectedIndicator);
+                }
+            }
+
             if (SelectedSecurity != _currentSecurity) {
                 _currentSecurity = SelectedSecurity;
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
@@ -55,6 +63,31 @@ namespace Frontend.Components.Controls {
             }
             RebuildIndicatorTsParameter();
             StateHasChanged();
+        }
+        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
+            switch (indicator) {
+                case "Simple Moving Average":
+                    TS smaTs = closePxTs.Sma(20);
+                    smaTs.SetIndicator("Sma");
+                    return new List<TS> { smaTs };
+                case "Exponentially Weighted Moving Average":
+                    TS ewmaTs = closePxTs.Ewma(20);
+                    ewmaTs.SetIndicator("Ewma");
+                    return new List<TS> { ewmaTs };
+                case "Bollinger Bands":
+                    (TS, TS) bollingerBands = closePxTs.BollingerBands(20, 2);
+                    TS upperBound = bollingerBands.Item1;
+                    upperBound.SetIndicator("Bollinger Bands Upper Band");
+                    TS lowerBound = bollingerBands.Item2;
+                    lowerBound.SetIndicator("Bollinger Bands Lower Band");
+                    return new List<TS> { upperBound, lowerBound };
+                case "Exponential Weighted Volatility":
+                    TS ewvolTs = closePxTs.Ewvol(20);
+                    ewvolTs.SetIndicator("Ewvol");
+                    return new List<TS> { ewvolTs };
+                default:
+                    return new List<TS>();
+            }
         }
 
         private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
@@ -85,13 +118,13 @@ namespace Frontend.Components.Controls {
 
         // Clear the timeseries parameters and rebuild all the parameters
         private void RebuildIndicatorTsParameter() {
+            // Remove all indicators and just rebuild them again
             IndicatorTSParameter.Clear();
 
             foreach (string indicator in _selectedIndicatorList) {
                 if (!_indicatorCache.ContainsKey(indicator)) {
                     _indicatorCache[indicator] = GenerateIndicatorTS(TimeseriesParam, indicator);
                 }
-
                 IndicatorTSParameter.AddRange(_indicatorCache[indicator]);
             }
         }
@@ -105,7 +138,6 @@ namespace Frontend.Components.Controls {
                 if (TimeseriesParam.Size() <= 0) {
                     Console.WriteLine("Timeseries is empty");
                 }
-
                 StateHasChanged();
             }
         }
@@ -126,7 +158,6 @@ namespace Frontend.Components.Controls {
             }
 
             polygonDataLoader.SetParameters(Ticker, Multiplier, Timespan, DateFrom.ToString("yyyy-MM-dd"), DateTo.ToString("yyyy-MM-dd"));
-
             polygonStockPriceData = await polygonDataLoader.LoadPolygonStockDataAsync();
 
             if (polygonStockPriceData != null) {

@@ -10,7 +10,6 @@ namespace Frontend.Components.Controls {
         private List<string> _availableSecurities = new List<string>();
         //Using strings here just temporarily to make it easy to test
 
-        //private string? InstrumentParameter;
         [Parameter]
         public EventCallback<string> SelectInstrumentCallback { get; set; }
 

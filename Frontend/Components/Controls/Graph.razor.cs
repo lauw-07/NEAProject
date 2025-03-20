@@ -6,11 +6,8 @@ namespace Frontend.Components.Controls {
     public partial class Graph {
         [Parameter]
         public TS? Timeseries { get; set; }
-
         [Parameter]
         public List<TS>? IndicatorTS { get; set; }
-
-        //private readonly List<Dictionary<string, object>> Dataset = new();
         private readonly Dictionary<string, Dictionary<string, object>> Dataset = new();
 
         //Need to loop through the indicator timeseries aswell and pass it on inside the Dataset object
@@ -47,20 +44,14 @@ namespace Frontend.Components.Controls {
             }
         }
 
-        // Pass timeseries into the graphing.js file
-
+        
         protected override async Task OnAfterRenderAsync(bool firstRender) {
             Console.WriteLine("OnAfterRenderAsync function in Graph Component has been triggered");
 
             if (Timeseries != null && Timeseries.Size() != 0) {
                 Console.WriteLine("Attempting to draw graph");
-                //await Js.InvokeVoidAsync("CreateGraph", Dataset, "graph");
+                // Pass timeseries as Dataset into the graphing.js file
                 await Js.InvokeVoidAsync("DrawGraph", Dataset, "graph");
-                
-
-                //IJSObjectReference module = await Js.InvokeAsync<IJSObjectReference>("import", "/js/drawGraph.js");
-                //await module.InvokeVoidAsync("DrawGraph", Dataset, "graph");
-
                 Console.WriteLine("Graph drawn");
             }
         }

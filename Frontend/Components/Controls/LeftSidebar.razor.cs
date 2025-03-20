@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Frontend.Components.Controls {
     public partial class LeftSidebar {
-        /*private List<TradingIndicator> tradingIndicators = new() {  }; 
+        /*
          * I will just use strings for now 
          * I can also probably just hard code in the trading indicators since I am going to be making my own versions of them
          */
@@ -16,8 +16,6 @@ namespace Frontend.Components.Controls {
         private List<string> _extraTradingIndicators = new List<string>() {
             "Linear Regression", "Standard Deviation", "RSI", "Aroon"
         };
-
-        //private string? IndicatorParameter;
 
         [Parameter]
         public EventCallback<string> SelectIndicatorCallback { get; set; }

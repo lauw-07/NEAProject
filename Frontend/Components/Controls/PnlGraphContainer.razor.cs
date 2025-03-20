@@ -28,6 +28,7 @@ namespace Frontend.Components.Controls {
 
         private List<string> GetStrategyParameters(string param) {
             // This is just for testing purposes, realistically i will not be just using the bollinger breakout strategy so these params will be different
+            // These _values are just for testing purposes
             switch (param) {
                 case "Ticker":
                     return new List<string>() { "AAPL", "MSFT", "NVDA", "AMZN", "TSLA" };
@@ -38,7 +39,7 @@ namespace Frontend.Components.Controls {
                 case "Exposure Type":
                     return new List<string>() { "Fixed Value", "Fixed Share" };
                 case "Exposure":
-                    return new List<string>() { "20", "50", "80", "200", "1000", "2000" }; // these _values are just for testing (i think i will enable the user to type their input for this parameter
+                    return new List<string>() { "20", "50", "80", "200", "1000", "2000" }; 
                 case "Exit Type":
                     return new List<string>() { "At Opposite", "At Reference" };
                 default:
