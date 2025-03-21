@@ -1,12 +1,48 @@
-﻿using Frontend.Models.Database;
+﻿using Frontend.Models;
+using Frontend.Models.Database;
 using Frontend.Models.Indicators;
 using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace Frontend.Components.Controls {
-    public partial class GraphContainer {
+    public struct IndicatorKey {
+        // Not all the attributes will be used in each indicator so some
+        // indicators will pass in default values
+        public string IndicatorName { get; set; }
+        public int WindowSize { get; set; }
+        public double HalfLife { get; set; }
+        public double Width { get; set; }
+
+        public IndicatorKey() {
+            IndicatorName = "";
+            WindowSize = 0;
+            HalfLife = 0;
+            Width = 0;
+        }
+
+        public IndicatorKey(string indicatorName, int windowSize, double halfLife, double width) {
+            IndicatorName = indicatorName;
+            WindowSize = windowSize;
+            HalfLife = halfLife;
+            Width = width;
+        }
+
+        public override bool Equals(object? obj) {
+            if (obj is IndicatorKey key)
+                return IndicatorName == key.IndicatorName &&
+                       WindowSize == key.WindowSize &&
+                       HalfLife == key.HalfLife &&
+                       Width == key.Width;
+            return false;
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(IndicatorName, WindowSize, HalfLife, Width);
+        }
+    }
+
+        public partial class GraphContainer {
         [Parameter]
         public string? SelectedInstrument { get; set; }
         [Parameter]
@@ -23,22 +59,15 @@ namespace Frontend.Components.Controls {
         private string symbol = string.Empty;
         private List<Result>? results;
         private TS _localTimeseries = new();
-        private Dictionary<string, List<TS>> _indicatorCache = new();
+        //private Dictionary<string, List<TS>> _indicatorCache = new();
+        private HashTable<IndicatorKey, List<TS>> _indicatorCache = new();
         private List<string> _selectedIndicatorList = new List<string>();
 
         private TS TimeseriesParam = new();
         private List<TS> IndicatorTSParameter = new();
 
         protected override async Task OnParametersSetAsync() {
-            // This method is only triggered when a parameter is set
-            if (!string.IsNullOrEmpty(SelectedIndicator)) {
-                if (_selectedIndicatorList.Contains(SelectedIndicator)) {
-                    _selectedIndicatorList.Remove(SelectedIndicator);
-                } else {
-                    _selectedIndicatorList.Add(SelectedIndicator);
-                }
-            }
-
+            // Only triggered if a parameter has been set
             if (SelectedSecurity != _currentSecurity) {
                 _currentSecurity = SelectedSecurity;
                 symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
@@ -47,7 +76,7 @@ namespace Frontend.Components.Controls {
                 }
                 // Clear indicator state when a new stock is selected.
                 _selectedIndicatorList.Clear();
-                _indicatorCache.Clear();
+                _indicatorCache = new();
             }
             RebuildIndicatorTsParameter();
         }
@@ -57,62 +86,58 @@ namespace Frontend.Components.Controls {
             // Remove indicator if exists and add if not exists
             if (_selectedIndicatorList.Contains(indicator)) {
                 _selectedIndicatorList.Remove(indicator);
-                _indicatorCache.Remove(indicator);
+
+                var (key, ts) = GenerateIndicatorTS(TimeseriesParam, indicator);
+                _indicatorCache.Remove(key);
             } else {
                 _selectedIndicatorList.Add(indicator);
             }
             RebuildIndicatorTsParameter();
             StateHasChanged();
         }
-        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
+
+        private (IndicatorKey, List<TS>) GenerateIndicatorTS(TS closePxTs, string indicator) {
+            IndicatorKey key = new IndicatorKey();
             switch (indicator) {
                 case "Simple Moving Average":
                     TS smaTs = closePxTs.Sma(20);
                     smaTs.SetIndicator("Sma");
-                    return new List<TS> { smaTs };
+
+                    key = new IndicatorKey("Simple Moving Average", 20, 0, 0);
+                    return (key, new List<TS> { smaTs });
                 case "Exponentially Weighted Moving Average":
                     TS ewmaTs = closePxTs.Ewma(20);
                     ewmaTs.SetIndicator("Ewma");
-                    return new List<TS> { ewmaTs };
+
+                    key = new IndicatorKey("Exponentially Weighted Moving Average", 0, 20, 0);
+                    return (key, new List<TS> { ewmaTs });
                 case "Bollinger Bands":
                     (TS, TS) bollingerBands = closePxTs.BollingerBands(20, 2);
                     TS upperBound = bollingerBands.Item1;
                     upperBound.SetIndicator("Bollinger Bands Upper Band");
                     TS lowerBound = bollingerBands.Item2;
                     lowerBound.SetIndicator("Bollinger Bands Lower Band");
-                    return new List<TS> { upperBound, lowerBound };
+
+                    key = new IndicatorKey("Bollinger Bands", 20, 0, 2);
+
+                    return (key, new List<TS> { upperBound, lowerBound });
                 case "Exponential Weighted Volatility":
                     TS ewvolTs = closePxTs.Ewvol(20);
                     ewvolTs.SetIndicator("Ewvol");
-                    return new List<TS> { ewvolTs };
+
+                    key = new IndicatorKey("Exponential Weighted Volatility", 0, 20, 0);
+                    return (key, new List<TS> { ewvolTs });
                 default:
-                    return new List<TS>();
+                    return (key, new List<TS>());
             }
         }
 
-        private List<TS> GenerateIndicatorTS(TS closePxTs, string indicator) {
-            switch (indicator) {
-                case "Simple Moving Average":
-                    TS smaTs = closePxTs.Sma(20);
-                    smaTs.SetIndicator("Sma");
-                    return new List<TS> { smaTs };
-                case "Exponentially Weighted Moving Average":
-                    TS ewmaTs = closePxTs.Ewma(20);
-                    ewmaTs.SetIndicator("Ewma");
-                    return new List<TS> { ewmaTs };
-                case "Bollinger Bands":
-                    (TS, TS) bollingerBands = closePxTs.BollingerBands(20, 2);
-                    TS upperBound = bollingerBands.Item1;
-                    upperBound.SetIndicator("Bollinger Bands Upper Band");
-                    TS lowerBound = bollingerBands.Item2;
-                    lowerBound.SetIndicator("Bollinger Bands Lower Band");
-                    return new List<TS> { upperBound, lowerBound };
-                case "Exponential Weighted Volatility":
-                    TS ewvolTs = closePxTs.Ewvol(20);
-                    ewvolTs.SetIndicator("Ewvol");
-                    return new List<TS> { ewvolTs };
-                default:
-                    return new List<TS>();
+        private bool ContainsKey(IndicatorKey key) {
+            try {
+                List<TS> _ = _indicatorCache[key];
+                return true;
+            } catch (KeyNotFoundException) {
+                return false;
             }
         }
 
@@ -122,10 +147,14 @@ namespace Frontend.Components.Controls {
             IndicatorTSParameter.Clear();
 
             foreach (string indicator in _selectedIndicatorList) {
-                if (!_indicatorCache.ContainsKey(indicator)) {
-                    _indicatorCache[indicator] = GenerateIndicatorTS(TimeseriesParam, indicator);
+                // Create indicator
+                var (key, ts) = GenerateIndicatorTS(TimeseriesParam, indicator);
+
+                // Add indicator to cache if it doesn't exist
+                if (!ContainsKey(key)) {
+                    _indicatorCache.Add(key, ts);
                 }
-                IndicatorTSParameter.AddRange(_indicatorCache[indicator]);
+                IndicatorTSParameter.AddRange(_indicatorCache[key]);
             }
         }
 

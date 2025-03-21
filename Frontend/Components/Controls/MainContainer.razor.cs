@@ -9,7 +9,7 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public string? SelectedSecurity { get; set; }
 
-        private GraphContainer graphContainerRef;
+        private GraphContainer? graphContainerRef;
 
         private void HandleIndicatorSelection(string indicator) {
             //selectedIndicator = indicator;
