@@ -103,6 +103,9 @@ namespace Frontend.Components.Controls {
                             case "At Reference":
                                 strategyParams.Add("ExitLevelClass", typeof(BollingerExitAtReference));
                                 break;
+                            case "With Trailing Stop":
+                                strategyParams.Add("ExitLevelClass", typeof(BollingerExitWithTrailingStop));
+                                break;
                             default:
                                 break;
                         }

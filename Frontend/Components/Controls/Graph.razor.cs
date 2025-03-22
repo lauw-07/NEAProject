@@ -8,11 +8,11 @@ namespace Frontend.Components.Controls {
         public TS? Timeseries { get; set; }
         [Parameter]
         public List<TS>? IndicatorTS { get; set; }
-        private readonly Dictionary<string, Dictionary<string, object>> Dataset = new();
+        private readonly Dictionary<string, Dictionary<string, object>> _dataset = new();
 
-        //Need to loop through the indicator timeseries aswell and pass it on inside the Dataset object
+        //Need to loop through the indicator timeseries aswell and pass it on inside the _dataset object
         protected override void OnParametersSet() {
-            Dataset.Clear();
+            _dataset.Clear();
             if (Timeseries != null && Timeseries.Size() > 0) {
                 AddToDataset(Timeseries);
             } else {
@@ -35,7 +35,7 @@ namespace Frontend.Components.Controls {
                 { "values", values }
             };
 
-            Dataset.Add((ts.GetIndicator() == "") ? "Close Prices" : ts.GetIndicator(), dataPoints);
+            _dataset.Add((ts.GetIndicator() == "") ? "Close Prices" : ts.GetIndicator(), dataPoints);
         }
 
         private void AddToDataset(List<TS> timeseries) {
@@ -50,8 +50,8 @@ namespace Frontend.Components.Controls {
 
             if (Timeseries != null && Timeseries.Size() != 0) {
                 Console.WriteLine("Attempting to draw graph");
-                // Pass timeseries as Dataset into the graphing.js file
-                await Js.InvokeVoidAsync("DrawGraph", Dataset, "graph");
+                // Pass timeseries as _dataset into the graphing.js file
+                await Js.InvokeVoidAsync("DrawGraph", _dataset, "graph");
                 Console.WriteLine("Graph drawn");
             }
         }

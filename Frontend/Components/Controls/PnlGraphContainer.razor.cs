@@ -41,7 +41,7 @@ namespace Frontend.Components.Controls {
                 case "Exposure":
                     return new List<string>() { "20", "50", "80", "200", "1000", "2000" }; 
                 case "Exit Type":
-                    return new List<string>() { "At Opposite", "At Reference" };
+                    return new List<string>() { "At Opposite", "At Reference", "With Trailing Stop" };
                 default:
                     return new List<string>();
             }

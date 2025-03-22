@@ -26,7 +26,7 @@ namespace Frontend.Models.Backtest.Breakout {
         // Last price + Last timestamp
 
         private DateTime _firstTimestamp = DateTime.MaxValue;
-        private DateTime? _previousTimestamp = null;
+        private DateTime? _lastTimestamp = null;
         private double _lastPrice = double.NaN;
         private double _signal = 0;
         private double _targetPosition = 0;
@@ -35,11 +35,11 @@ namespace Frontend.Models.Backtest.Breakout {
         private double _upperBound = double.NaN;
         private double _lowerBound = double.NaN;
         private int _windowSize = 0;
-        
+
 
         private BollingerBreakoutForecastStates _state = BollingerBreakoutForecastStates.Idle;
         private ExposureManager _exposureManager;
-
+        private Type _exitManagerClass;
         private BollingerExitManager _exitManager;
 
         public BollingerBreakoutStrategy(StrategyParams strategyParams) : base(strategyParams) {
@@ -53,8 +53,8 @@ namespace Frontend.Models.Backtest.Breakout {
 
             _exposureManager = ExposureManager.GetInstance(exposureManagerClass, exposureManagerParams);
 
-            Type exitManagerClass = (Type)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.ExitLevelClass.ToString()];
-            _exitManager = BollingerExitManager.GetInstance(exitManagerClass, _bollingerBands);
+            _exitManagerClass = (Type)strategyParams.GetInputs()[BollingerBreakoutStrategyFields.ExitLevelClass.ToString()];
+            _exitManager = BollingerExitManager.GetInstance(_exitManagerClass, _bollingerBands);
         }
 
         // update on snapshot of TS
@@ -72,13 +72,13 @@ namespace Frontend.Models.Backtest.Breakout {
                         break;
                     }
 
-                    if (closePx >= _upperBound) {
+                    if (closePx > _upperBound) {
                         _state = BollingerBreakoutForecastStates.Long; // price breaches upper bound
                         _signal = 1; // normalised _signal, 1 = fully long (i.e. max position size) 
 
-                        // based on type of exposure type (i.e. FixedValue or FixedShare), it scales the num of shares desired by the _signal strength
+                        // based on type of exposure type (i.e. FixedValue or FixedShare), it scales the num shares desired by the _signal strength
                         _targetPosition = _signal * _exposureManager.GetNumShares(closePx);
-                    } else if (closePx <= _lowerBound) {
+                    } else if (closePx < _lowerBound) {
                         _state = BollingerBreakoutForecastStates.Short;
                         _signal = -1;
 
@@ -88,14 +88,14 @@ namespace Frontend.Models.Backtest.Breakout {
                     }
                     break;
                 case BollingerBreakoutForecastStates.Long:
-                    if (closePx <= _exitManager.GetExitLevel(_state)) {
+                    if (closePx < GetExitRef(_state, closePx)) {
                         _state = BollingerBreakoutForecastStates.Idle;
                         _signal = 0;
                         _targetPosition = 0;
                     }
                     break;
                 case BollingerBreakoutForecastStates.Short:
-                    if (closePx >= _exitManager.GetExitLevel(_state)) {
+                    if (closePx > GetExitRef(_state, closePx)) {
                         _state = BollingerBreakoutForecastStates.Idle;
                         _signal = 0;
                         _targetPosition = 0;
@@ -104,6 +104,16 @@ namespace Frontend.Models.Backtest.Breakout {
                 default:
                     break;
             }
+        }
+
+        private double GetExitRef(BollingerBreakoutForecastStates state, double closePx) {
+            double exitLevel = double.NaN;
+            if (typeof(BollingerExitWithTrailingStop).IsAssignableFrom(_exitManagerClass)) {
+                exitLevel = _exitManager.GetExitLevel(state, closePx);
+            } else {
+                exitLevel = _exitManager.GetExitLevel(state);
+            }
+            return exitLevel;
         }
 
         // allow update on a whole TS
@@ -128,52 +138,6 @@ namespace Frontend.Models.Backtest.Breakout {
 
         public override int GetWindowSize() {
             return _windowSize;
-        }
-
-    }
-
-    public abstract class BollingerExitManager {
-        protected BollingerBands bollinger;
-        public BollingerExitManager(BollingerBands bollingerBands) {
-            bollinger = bollingerBands;
-        }
-
-        public abstract double GetExitLevel(BollingerBreakoutForecastStates state);
-        public static BollingerExitManager GetInstance(Type type, BollingerBands bollingerBands) {
-            if (typeof(BollingerExitAtReference).IsAssignableFrom(type)) {
-                return new BollingerExitAtReference(bollingerBands);
-            } else if (typeof(BollingerExitAtOpposite).IsAssignableFrom(type)) {
-                return new BollingerExitAtOpposite(bollingerBands);
-            } else {
-                throw new NotImplementedException();
-            }
-        }
-    }
-
-    // exit when reaches _reference price (i.e. price of the Moving average at a certain timestamp)
-    public class BollingerExitAtReference : BollingerExitManager {
-        public BollingerExitAtReference(BollingerBands bollingerBands) : base(bollingerBands) {
-        }
-
-        public override double GetExitLevel(BollingerBreakoutForecastStates state) {
-            return bollinger.GetReference();
-        }
-    }
-
-    // exit when reaches the other bound (i.e. if passed upper bound, exit at lower bound)
-    public class BollingerExitAtOpposite : BollingerExitManager {
-        public BollingerExitAtOpposite(BollingerBands bollingerBands) : base(bollingerBands) {
-        }
-
-        public override double GetExitLevel(BollingerBreakoutForecastStates state) {
-            switch (state) {
-                case BollingerBreakoutForecastStates.Long:
-                    return bollinger.GetLowerBand();
-                case BollingerBreakoutForecastStates.Short:
-                    return bollinger.GetUpperBand();
-                default:
-                    return double.NaN;
-            }
         }
     }
 }
