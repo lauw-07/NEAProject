@@ -51,5 +51,9 @@ namespace Frontend.Models.Indicators {
         public double GetCurrentMa() {
             return _currentMa;
         }
+
+        public void SetSeed(double seed) {
+            _currentMa = seed;
+        }
     }
 }
