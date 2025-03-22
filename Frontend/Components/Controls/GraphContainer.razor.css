@@ -106,3 +106,48 @@
     flex-direction: column;
     gap: 10px;
 }
+
+.graph-details-wrapper {
+    position: relative;
+}
+
+    .graph-details-wrapper .details-grid {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        box-shadow: 0 0 10px #ccc;
+        border-radius: 10px;
+        min-width: 300px;
+        max-height: 100px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .graph-details-wrapper:hover .details-grid {
+        display: grid;
+        gap: 5px;
+    }
+
+.details-header {
+    font-weight: bold;
+    background: #f2f2f2;
+    border-bottom: 2px solid #d1d1d1;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.details-header, .details-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 5px 5px;
+}
+
+    .details-row span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }

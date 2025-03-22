@@ -36,3 +36,48 @@
 .topbar-menu-content {
     top: 0;
 }
+
+.summary-wrapper {
+    position: relative;
+}
+
+    .summary-wrapper .summary-data-grid {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        box-shadow: 0 0 10px #ccc;
+        border-radius: 10px;
+        min-width: 600px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    .summary-wrapper:hover .summary-data-grid {
+        display: grid;
+        gap: 5px;
+    }
+
+.summary-header {
+    font-weight: bold;
+    background: #f2f2f2;
+    border-bottom: 2px solid #d1d1d1;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.summary-header, .summary-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 5px 5px;
+}
+
+.summary-row span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

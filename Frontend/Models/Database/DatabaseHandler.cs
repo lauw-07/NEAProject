@@ -38,10 +38,6 @@ namespace Frontend.Models.Database {
                 SqlCommand cmd = new SqlCommand(query, connection);
                 await cmd.ExecuteNonQueryAsync();
 
-                List<string> header = new List<string>() {
-                    "Instrument Name", "Last Price Date", "Average Close Price", "Minimum Close Price", "Maximum Close Price"
-                };
-                summaryData.Add(header);
                 using (SqlDataReader reader = cmd.ExecuteReader()) {
                     while (reader.Read()) {
                         List<string> data = new List<string> {

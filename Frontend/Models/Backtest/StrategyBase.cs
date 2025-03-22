@@ -2,18 +2,15 @@
 
 namespace Frontend.Models.Backtest
 {
-    public enum BaseStrategyFields
-    {
+    public enum BaseStrategyFields {
         ClosePrice,
         Timestamp
     }
 
-    public abstract class StrategyBase
-    {
+    public abstract class StrategyBase {
         protected StrategyParams StrategyParams { get; set; }
 
-        public StrategyBase(StrategyParams strategyParams)
-        {
+        public StrategyBase(StrategyParams strategyParams) {
             StrategyParams = strategyParams;
         }
 

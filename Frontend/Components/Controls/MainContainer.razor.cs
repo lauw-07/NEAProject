@@ -12,7 +12,6 @@ namespace Frontend.Components.Controls {
         private GraphContainer? graphContainerRef;
 
         private void HandleIndicatorSelection(string indicator) {
-            //selectedIndicator = indicator;
             graphContainerRef?.ToggleIndicator(indicator);
         }
     }

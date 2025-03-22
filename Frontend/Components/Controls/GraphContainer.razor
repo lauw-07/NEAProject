@@ -40,28 +40,43 @@
             </div>
         </div>
 
-        <div class="dropdown-menu">
+        <div class="dropdown-menu graph-details-wrapper">
             <div class="select-btn">
                 <span class="selectBtn-text">Graph Details</span>
                 <span class="e-icons e-chevron-down"></span>
             </div>
-            <div class="options">
-                <div class="option">
-                    <span class="option-text-title">Instrument:</span>
-                    <span class="option-text">@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
+
+            <div class="details-grid">
+                <div class="details-header">
+                    <span>Instrument</span>
+                    <span>Security</span>
+                    <span>Indicators</span>
                 </div>
-                <div class="option">
-                    <span class="option-text-title">Security:</span>
-                    <span class="option-text">@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
-                </div>
-                <div class="option">
-                    <span class="option-text-title">Indicators:</span>
-                    <div class="indicator-list">
-                        @foreach (string indicator in _selectedIndicatorList) {
-                            <div class="option-text">@indicator</div>
-                        }
+
+                @if (_selectedIndicatorList.Count > 0) {
+                    <div class="details-row">
+                        <span>@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
+                        <span>@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
+                        <span>@_selectedIndicatorList[0]</span>
                     </div>
-                </div>
+
+                    if (_selectedIndicatorList.Count > 1) {
+                        foreach (string indicator in _selectedIndicatorList.GetRange(1, _selectedIndicatorList.Count - 2)) {
+                            <div class="details-row">
+                                <span></span>
+                                <span></span>
+                                <span>@indicator</span>
+                            </div>
+                        }
+                    }
+                    
+                } else {
+                    <div class="details-row">
+                        <span>@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
+                        <span>@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
+                        <span></span>
+                    </div>
+                }
             </div>
         </div>
     </div>

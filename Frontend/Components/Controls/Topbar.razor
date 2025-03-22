@@ -35,19 +35,28 @@
     </div>
 
     <div class="small-container">
-        <div class="dropdown-menu" @onmouseover="() => GetSummaryData()">
-            <div class="select-btn">
+        <div class="dropdown-menu summary-wrapper">
+            <div class="select-btn" @onmouseover="() => GetSummaryData()">
                 <span class="selectBtn-text">Get Price Data Summary</span>
                 <span class="e-icons e-chevron-down"></span>
             </div>
-            <div class="options">
+            
+            <div class="summary-data-grid">
+                <div class="summary-header">
+                    <span>Instrument Name</span>
+                    <span>Date</span>
+                    <span>Average Close</span>
+                    <span>Min Close</span>
+                    <span>Max Close</span>
+                </div>
+
                 @foreach (List<string> row in _summaryData) {
-                    @foreach (string item in row) {
-                        <div class="option">
-                            <span class="option-text">@item</span>
-                        </div>
-                    }
-                })
+                    <div class="summary-row">
+                        @foreach (string item in row) {
+                            <span>@item</span>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
