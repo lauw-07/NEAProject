@@ -1,8 +1,10 @@
 ﻿using Frontend.Models.Backtest.Breakout;
+using Frontend.Models.Backtest.Crossover;
 using Frontend.Models.Timeseries;
 using Instrument = Frontend.Models.Database.Instrument;
 
-namespace Frontend.Models.Backtest {
+namespace Frontend.Models.Backtest
+{
     /* What does Backtest manager do???
      * Run a backtesting strategy (i.e. bollinger band breakout or ewma crossover)
      * Using the strategy, create a pnl timeseries
@@ -24,6 +26,10 @@ namespace Frontend.Models.Backtest {
                 // e.g. BollingerBreakoutStrategy
                 _instrument = instrument;
                 _strategy = new BollingerBreakoutStrategy(strategyParams);
+            } else if (typeof(EwmaCrossoverStrategy).IsAssignableFrom(strategyType)) {
+                // e.g. EwmaCrossoverStrategy
+                _instrument = instrument;
+                _strategy = new EwmaCrossoverStrategy(strategyParams);
             }
         }
 

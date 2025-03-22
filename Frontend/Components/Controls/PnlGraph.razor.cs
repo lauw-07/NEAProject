@@ -1,12 +1,14 @@
 ﻿using Frontend.Models.Backtest;
 using Frontend.Models.Backtest.Breakout;
+using Frontend.Models.Backtest.Crossover;
 using Frontend.Models.Database;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Data;
 
-namespace Frontend.Components.Controls {
+namespace Frontend.Components.Controls
+{
     public partial class PnlGraph {
         [Parameter]
         public string? Strategy { get; set; }
@@ -15,16 +17,16 @@ namespace Frontend.Components.Controls {
         public Dictionary<string, string> Parameters { get; set; } = new();
 
         private List<TS> _timeseriesToGraph = new();
-        private readonly Dictionary<string, Dictionary<string, object>> Dataset = new();
+        private readonly Dictionary<string, Dictionary<string, object>> _dataset = new();
 
         // for example { "IndicatorTs" : [{ "Timestamps" : [ 1230912, 1230912, 1230912, 1230912 ] }, { "Values" : [ 123, 123 ] } ]}
 
         protected override async void OnParametersSet() {
-            Dataset.Clear();
+            _dataset.Clear();
             _timeseriesToGraph.Clear();
             if (Parameters != null && Parameters.Count > 0) {
                 await Backtest(databaseHandler);
-                await Js.InvokeVoidAsync("DrawGraph", Dataset, "pnlGraph");
+                await Js.InvokeVoidAsync("DrawGraph", _dataset, "pnlGraph");
             } else {
                 Console.WriteLine("Parameters data is null");
             }
@@ -44,17 +46,90 @@ namespace Frontend.Components.Controls {
                     GenerateBollingerBreakoutPnl(instrument, timeseries, backtestManager);
                     break;
                 case "EWMA Crossover":
-                    GenerateEwmaCrossoverPnl();
+                    GenerateEwmaCrossoverPnl(instrument, timeseries, backtestManager);
                     break;
                 default:
                     break;
             }
         }
 
+        private void GenerateEwmaCrossoverPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
+            TS closePxTs = timeseries[1];
 
-        private void GenerateEwmaCrossoverPnl() {
-            // Haven't created an ewma crossover strategy yet but it would function similarly to the bollinger breakout strategy
-            throw new NotImplementedException();
+            Type strategyType = typeof(EwmaCrossoverStrategy);
+
+            StrategyParams strategyParams = new StrategyParams();
+            Dictionary<string, object> inputDict = GenerateEwmaCrossoverParams(Parameters);
+            strategyParams.AddInputs(inputDict);
+
+            backtestManager.SetStrategy(strategyType, strategyParams, instrument);
+
+            List<StrategyInput> strategyInputs = new List<StrategyInput>();
+            for (int i = 0; i < closePxTs.Size(); i++) {
+                StrategyInput strategyInput = new StrategyInput();
+                strategyInput.AddInput("ClosePrice", closePxTs.GetValue(i));
+                strategyInput.AddInput("Timestamp", closePxTs.GetTimestamp(i));
+                strategyInputs.Add(strategyInput);
+            }
+
+            TS pnlTs = backtestManager.RunBacktest(strategyInputs);
+            
+            TS ewmaFast = closePxTs.Ewma((double)inputDict["FastHL"]);
+            TS ewmaSlow = closePxTs.Ewma((double)inputDict["SlowHL"]);
+
+            List<TS> indicatorTs = new List<TS>() { ewmaFast, ewmaSlow };
+
+            AddToDataset(closePxTs, "Close Prices");
+            AddToDataset(pnlTs, "P&L");
+            AddToDataset(indicatorTs, "Moving Averages");
+        }
+
+        private Dictionary<string, object> GenerateEwmaCrossoverParams(Dictionary<string, string> rawParams) {
+            Dictionary<string, object> strategyParams = new();
+
+            bool IsFixedValueExposure = false;
+            foreach (KeyValuePair<string, string> pair in rawParams) {
+                switch (pair.Key) {
+                    case "Ticker":
+                        break;
+                    case "Slow Half Life":
+                        strategyParams.Add("SlowHL", double.Parse(pair.Value));
+                        break;
+                    case "Fast Half Life":
+                        strategyParams.Add("FastHL", double.Parse(pair.Value));
+                        break;
+                    case "Width":
+                        strategyParams.Add("Width", double.Parse(pair.Value));
+                        break;
+                    case "Exposure Type":
+                        switch (pair.Value) {
+                            case "Fixed Value":
+                                strategyParams.Add("ExposureClass", typeof(FixedValueExposureManager));
+                                IsFixedValueExposure = true;
+                                break;
+                            case "Fixed Share":
+                                strategyParams.Add("ExposureClass", typeof(FixedShareExposureManager));
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case "Exposure":
+                        StrategyParams exposureParams = new StrategyParams();
+                        if (IsFixedValueExposure) {
+                            exposureParams.AddInput("ExposureFixedValue", double.Parse(pair.Value));
+                            strategyParams.Add("ExposureFixedValue", double.Parse(pair.Value));
+                        } else {
+                            exposureParams.AddInput("ExposureFixedShare", double.Parse(pair.Value));
+                            strategyParams.Add("ExposureFixedShare", double.Parse(pair.Value));
+                        }
+                        strategyParams.Add("ExposureParams", exposureParams);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return strategyParams;
         }
 
         private Dictionary<string, object> GenerateBollingerBreakoutParams(Dictionary<string, string> rawParams) {
@@ -155,13 +230,16 @@ namespace Frontend.Components.Controls {
                 { "values", values }
             };
 
-            Dataset.Add(label, dataPoints);
+            _dataset.Add(label, dataPoints);
         }
 
         private void AddToDataset(List<TS> timeseries, string label) {
             if (label == "Bollinger Bands") {
                 AddToDataset(timeseries[0], "Bollinger Bands Upper Band");
                 AddToDataset(timeseries[1], "Bollinger Bands Lower Band");
+            } else if (label == "Moving Averages") {
+                AddToDataset(timeseries[0], "EWMA Fast");
+                AddToDataset(timeseries[1], "EWMA Slow");
             }
         }
 

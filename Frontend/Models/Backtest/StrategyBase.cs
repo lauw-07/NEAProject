@@ -1,15 +1,19 @@
 ﻿using Frontend.Models.Timeseries;
 
-namespace Frontend.Models.Backtest.Breakout {
-    public enum BaseStrategyFields {
+namespace Frontend.Models.Backtest
+{
+    public enum BaseStrategyFields
+    {
         ClosePrice,
         Timestamp
     }
 
-    public abstract class StrategyBase {
+    public abstract class StrategyBase
+    {
         protected StrategyParams StrategyParams { get; set; }
 
-        public StrategyBase(StrategyParams strategyParams) {
+        public StrategyBase(StrategyParams strategyParams)
+        {
             StrategyParams = strategyParams;
         }
 
@@ -20,7 +24,5 @@ namespace Frontend.Models.Backtest.Breakout {
         public abstract double GetTargetPosition();
 
         public abstract double GetSignal();
-
-        public abstract int GetWindowSize();
     }
 }

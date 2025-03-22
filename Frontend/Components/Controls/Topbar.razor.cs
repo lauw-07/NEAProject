@@ -16,11 +16,12 @@ namespace Frontend.Components.Controls {
         [Parameter]
         public EventCallback<string> SelectSecurityCallback { get; set; }
 
-        private string? instrumentSelected;
+        private string? _instrumentSelected;
+        private List<List<string>> _summaryData = new();
 
         private async Task SelectInstrument(string instrument) {
             Console.WriteLine($"Selected Instrument: {instrument}");
-            instrumentSelected = instrument;
+            _instrumentSelected = instrument;
             await GetAvailableSecurities(instrument);
             await SelectInstrumentCallback.InvokeAsync(instrument);
         }
@@ -39,6 +40,10 @@ namespace Frontend.Components.Controls {
             }
 
             _availableSecurities = instrumentNames;
+        }
+
+        private async Task GetSummaryData() {
+            _summaryData = await databaseHandler.GetPriceDataSummary();
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using Frontend.Models.Indicators;
 using Frontend.Models.Timeseries;
 
-namespace Frontend.Models.Backtest.Breakout {
+namespace Frontend.Models.Backtest.Breakout
+{
     public enum BollingerBreakoutStrategyFields {
         WindowSize,
         Width,
@@ -136,7 +137,7 @@ namespace Frontend.Models.Backtest.Breakout {
             return _signal;
         }
 
-        public override int GetWindowSize() {
+        public int GetWindowSize() {
             return _windowSize;
         }
     }

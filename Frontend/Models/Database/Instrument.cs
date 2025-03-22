@@ -29,5 +29,9 @@ namespace Frontend.Models.Database {
                     return double.NaN;
             }
         }
+
+        public static implicit operator Instrument(List<Instrument> v) {
+            throw new NotImplementedException();
+        }
     }
 }

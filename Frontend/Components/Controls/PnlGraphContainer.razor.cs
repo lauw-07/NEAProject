@@ -34,6 +34,10 @@ namespace Frontend.Components.Controls {
                     return new List<string>() { "AAPL", "MSFT", "NVDA", "AMZN", "TSLA" };
                 case "Window Size":
                     return new List<string>() { "10", "20", "30", "40", "50" };
+                case "Slow Half Life":
+                    return new List<string>() { "10", "20", "30", "40", "50" };
+                case "Fast Half Life":
+                    return new List<string>() { "5", "10", "15", "20", "25" };
                 case "Width":
                     return new List<string>() { "1.5", "2", "2.5" };
                 case "Exposure Type":
@@ -51,6 +55,8 @@ namespace Frontend.Components.Controls {
             switch (Strategy) {
                 case "Bollinger Bands Breakout":
                     return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type" };
+                case "EWMA Crossover":
+                    return new List<string>() { "Ticker", "Slow Half Life", "Fast Half Life", "Exposure Type", "Exposure" };
                 default:
                     return new List<string>();
             }

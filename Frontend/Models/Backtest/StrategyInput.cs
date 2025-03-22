@@ -1,29 +1,37 @@
-﻿namespace Frontend.Models.Backtest.Breakout {
-    public class StrategyInput {
+﻿namespace Frontend.Models.Backtest
+{
+    public class StrategyInput
+    {
         private Dictionary<string, object> _inputs = new Dictionary<string, object>();
 
         public StrategyInput() { }
 
-        public Dictionary<string, object> GetInputs() {
+        public Dictionary<string, object> GetInputs()
+        {
             return _inputs;
         }
 
-        public void AddInput(string key, object value) {
+        public void AddInput(string key, object value)
+        {
             _inputs.Add(key, value);
         }
 
-        public void AddInputs(Dictionary<string, object> inputs) {
-            foreach (KeyValuePair<string, object> pair in inputs) {
+        public void AddInputs(Dictionary<string, object> inputs)
+        {
+            foreach (KeyValuePair<string, object> pair in inputs)
+            {
                 if (!_inputs.ContainsKey(pair.Key))
                     _inputs.Add(pair.Key, pair.Value);
             }
         }
 
-        public double GetClosePrice() {
+        public double GetClosePrice()
+        {
             return (double)_inputs[BaseStrategyFields.ClosePrice.ToString()];
         }
 
-        public DateTime GetTimestamp() {
+        public DateTime GetTimestamp()
+        {
             return (DateTime)_inputs[BaseStrategyFields.Timestamp.ToString()];
         }
     }
