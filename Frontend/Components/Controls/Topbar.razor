@@ -11,7 +11,7 @@
                 </div>
                 <div class="options">
                     @foreach (var instrument in _instruments) {
-                        <div class="option" @onmouseover="() => SelectInstrument(instrument)">
+                        <div class="option" @onmouseover="() => GetAvailableSecurities(instrument)">
                             <div class="popout-menu topbar-menu">
                                 <a href="#">
                                     <span class="option-text">@instrument</span>

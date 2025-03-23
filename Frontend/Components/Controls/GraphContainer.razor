@@ -4,7 +4,7 @@
 
 <section id="graph-container" class="child">
     <div class="graph-headers">
-        <div class="dropdown-inputs">
+        <!--        <div class="dropdown-inputs">
             <div class="dropdown-toggle">
                 <span>Get new data</span>
                 <span class="e-icons e-chevron-down"></span>
@@ -39,6 +39,7 @@
                 <button @onclick="FetchData">Load Data</button>
             </div>
         </div>
+        -->
 
         <div class="dropdown-menu graph-details-wrapper">
             <div class="select-btn">
@@ -53,15 +54,15 @@
                     <span>Indicators</span>
                 </div>
 
-                @if (_selectedIndicatorList.Count > 0) {
+                @if (_selectedIndicators.Count > 0) {
                     <div class="details-row">
-                        <span>@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
+                        <span>@(_selectedInstrument == null ? "Stocks" : _selectedInstrument)</span>
                         <span>@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
-                        <span>@_selectedIndicatorList[0]</span>
+                        <span>@_selectedIndicators[0]</span>
                     </div>
 
-                    if (_selectedIndicatorList.Count > 1) {
-                        foreach (string indicator in _selectedIndicatorList.GetRange(1, _selectedIndicatorList.Count - 2)) {
+                    if (_selectedIndicators.Count > 1) {
+                        foreach (string indicator in _selectedIndicators.GetRange(1, _selectedIndicators.Count - 2)) {
                             <div class="details-row">
                                 <span></span>
                                 <span></span>
@@ -72,7 +73,7 @@
                     
                 } else {
                     <div class="details-row">
-                        <span>@(SelectedInstrument == null ? "Stocks" : SelectedInstrument)</span>
+                        <span>@(_selectedInstrument == null ? "Stocks" : _selectedInstrument)</span>
                         <span>@(SelectedSecurity == null ? "Apple" : SelectedSecurity)</span>
                         <span></span>
                     </div>
@@ -83,8 +84,8 @@
 
     @if (_timeseriesParam != null && _timeseriesParam.Size() > 0) {
         <Graph
-            Timeseries="@_timeseriesParam" 
-            IndicatorTS="@_indicatorTSParameter"
+            Timeseries="@_timeseriesParam"
+            IndicatorTS="@_indicatorsParam"
             @rendermode="InteractiveServer" />
     }
     

@@ -3,8 +3,8 @@
 namespace Frontend.Components.Controls {
     public partial class MainContainer {
 
-        [Parameter]
-        public string? SelectedInstrument { get; set; }
+        //[Parameter]
+        //public string? SelectedInstrument { get; set; }
 
         [Parameter]
         public string? SelectedSecurity { get; set; }

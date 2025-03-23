@@ -1,6 +1,5 @@
 ﻿using Frontend.Models;
 using Frontend.Models.Database;
-using Frontend.Models.Indicators;
 using Frontend.Models.PolygonData;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
@@ -42,60 +41,73 @@ namespace Frontend.Components.Controls {
         }
     }
 
-        public partial class GraphContainer {
-        [Parameter]
-        public string? SelectedInstrument { get; set; }
-        [Parameter]
-        public string? SelectedSecurity { get; set; }
+    public partial class GraphContainer {
+        // Fields for displaying data on graph
 
-        private string? Ticker { get; set; }
-        private int Multiplier { get; set; }
-        private string? Timespan { get; set; }
-        private DateTime DateFrom { get; set; }
-        private DateTime DateTo { get; set; }
+        // Maybe don't need this
+        //[Parameter]
+        //public string SelectedInstrument { get; set; } = "";
 
-        private string? _currentSecurity;
-        private PolygonStockPriceData? polygonStockPriceData;
-        private string _symbol = string.Empty;
-        private List<Result>? _results;
-        private TS _localTimeseries = new();
-        //private Dictionary<string, List<TS>> _indicatorCache = new();
+        [Parameter]
+        public string SelectedSecurity { get; set; } = "";
+        private string _currentSecurity = ""; 
+        private string _ticker = "AAPL"; // By default set to AAPL
+        private string _selectedInstrument = "Stocks";
+
+        // Fields for indicators
         private HashTable<IndicatorKey, List<TS>> _indicatorCache = new();
-        private List<string> _selectedIndicatorList = new List<string>();
+        private List<string> _selectedIndicators = new();
 
+        // Variables to be passed as parameters to the graph component
         private TS _timeseriesParam = new();
-        private List<TS> _indicatorTSParameter = new();
+        private List<TS> _indicatorsParam = new();
 
+        // Methods for handling changes in parameters
         protected override async Task OnParametersSetAsync() {
             // Only triggered if a parameter has been set
             if (SelectedSecurity != _currentSecurity) {
                 _currentSecurity = SelectedSecurity;
-                _symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
-                if (!string.IsNullOrEmpty(_symbol)) {
-                    _timeseriesParam = await ReadFromDatabase(_symbol);
+                _ticker = await databaseHandler.GetTickerByNameAsync(SelectedSecurity);
+                _selectedInstrument = await databaseHandler.GetInstrumentTypeFromTickerAsync(_ticker);
+                if (!string.IsNullOrEmpty(_ticker)) {
+                    _timeseriesParam = await GetTSDataFromDatabase(_ticker);
                 }
                 // Clear indicator state when a new stock is selected.
-                _selectedIndicatorList.Clear();
+                _selectedIndicators.Clear();
                 _indicatorCache = new();
             }
             await RebuildIndicatorTsParameter();
         }
 
-        // method to toggle an indicator which gets called from a parent component
+        protected override async Task OnAfterRenderAsync(bool firstRender) {
+            if (firstRender) {
+                Console.WriteLine("Fetching initial data from database");
+                _timeseriesParam = await GetTSDataFromDatabase(_ticker);
+
+                if (_timeseriesParam.Size() <= 0) {
+                    Console.WriteLine("Timeseries is empty");
+                }
+                StateHasChanged();
+            }
+        }
+
         public async Task ToggleIndicator(string indicator) {
+            // method to toggle an indicator which gets called from a parent component
             // Remove indicator if exists and add if not exists
-            if (_selectedIndicatorList.Contains(indicator)) {
-                _selectedIndicatorList.Remove(indicator);
+            if (_selectedIndicators.Contains(indicator)) {
+                _selectedIndicators.Remove(indicator);
 
                 var (key, ts) = await GenerateIndicatorTS(_timeseriesParam, indicator);
                 _indicatorCache.Remove(key);
             } else {
-                _selectedIndicatorList.Add(indicator);
+                _selectedIndicators.Add(indicator);
             }
             await RebuildIndicatorTsParameter();
             StateHasChanged();
         }
 
+
+        // Methods for handling indicator selection
         private async Task<(IndicatorKey, List<TS>)> GenerateIndicatorTS(TS closePxTs, string indicator) {
             IndicatorKey key = new IndicatorKey();
             switch (indicator) {
@@ -105,12 +117,14 @@ namespace Frontend.Components.Controls {
 
                     key = new IndicatorKey("Simple Moving Average", 20, 0, 0);
                     return (key, new List<TS> { smaTs });
+
                 case "Exponentially Weighted Moving Average":
                     TS ewmaTs = closePxTs.Ewma(20);
                     ewmaTs.SetIndicator("Ewma");
 
                     key = new IndicatorKey("Exponentially Weighted Moving Average", 0, 20, 0);
                     return (key, new List<TS> { ewmaTs });
+
                 case "Bollinger Bands":
                     (TS, TS) bollingerBands = closePxTs.BollingerBands(20, 2);
                     TS upperBound = bollingerBands.Item1;
@@ -121,36 +135,31 @@ namespace Frontend.Components.Controls {
                     key = new IndicatorKey("Bollinger Bands", 20, 0, 2);
 
                     return (key, new List<TS> { upperBound, lowerBound });
+
                 case "Exponential Weighted Volatility":
                     TS ewvolTs = closePxTs.Ewvol(20);
                     ewvolTs.SetIndicator("Ewvol");
 
                     key = new IndicatorKey("Exponential Weighted Volatility", 0, 20, 0);
                     return (key, new List<TS> { ewvolTs });
-                case "Linear Regression":
-                    List<string> instrumentTickers = new List<string>();
 
-                    List<Instrument> instruments = await databaseHandler.GetInstrumentDataByTypeAsync(SelectedInstrument);
-                    foreach (Instrument instrument in instruments) {
-                        if (instrument.InstrumentSymbol != _symbol) {
-                            instrumentTickers.Add(instrument.InstrumentSymbol);
-                        }
-                    }
+                case "Linear Regression":
+                    List<string> predictorsTickers = await databaseHandler.GetTickersBasedOfATickerAsync(_ticker);
 
                     List<TS> predictorsTS = new List<TS>();
-                    foreach (string ticker in instrumentTickers) {
-                        predictorsTS.Add(await ReadFromDatabase(ticker));
+                    foreach (string ticker in predictorsTickers) {
+                        predictorsTS.Add(await GetTSDataFromDatabase(ticker));
                     }
 
                     TS linregTs = closePxTs.LinearRegression(predictorsTS);
                     linregTs.SetIndicator("Linear Regression");
                     key = new IndicatorKey("Linear Regression", 0, 0, 0);
                     return (key, new List<TS> { linregTs });
+
                 default:
                     return (key, new List<TS>());
             }
         }
-
         private bool ContainsKey(IndicatorKey key) {
             try {
                 List<TS> _ = _indicatorCache[key];
@@ -160,12 +169,13 @@ namespace Frontend.Components.Controls {
             }
         }
 
-        // Clear the timeseries parameters and rebuild all the parameters
+        
         private async Task RebuildIndicatorTsParameter() {
+            // Clear the timeseries parameters and rebuild all the parameters
             // Remove all indicators and just rebuild them again
-            _indicatorTSParameter.Clear();
+            _indicatorsParam.Clear();
 
-            foreach (string indicator in _selectedIndicatorList) {
+            foreach (string indicator in _selectedIndicators) {
                 // Create indicator
                 var (key, ts) = await GenerateIndicatorTS(_timeseriesParam, indicator);
 
@@ -173,71 +183,12 @@ namespace Frontend.Components.Controls {
                 if (!ContainsKey(key)) {
                     _indicatorCache.Add(key, ts);
                 }
-                _indicatorTSParameter.AddRange(_indicatorCache[key]);
+                _indicatorsParam.AddRange(_indicatorCache[key]);
             }
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender) {
-            if (firstRender) {
-                Console.WriteLine("Fetching initial data from database");
-                _symbol = await databaseHandler.GetInstrumentByNameAsync(SelectedSecurity);
-                _timeseriesParam = await GetLocalTS();
-                
-                if (_timeseriesParam.Size() <= 0) {
-                    Console.WriteLine("Timeseries is empty");
-                }
-                StateHasChanged();
-            }
-        }
-        private async Task FetchData() {
-            await LoadData();
-            await SaveToDatabase();
-            _timeseriesParam = await GetLocalTS();
-        }
-
-        private async Task<TS> GetLocalTS() {
-            _localTimeseries = await ReadFromDatabase(_symbol);
-            return _localTimeseries;
-        }
-
-        private async Task LoadData() {
-            if (string.IsNullOrEmpty(Ticker) || string.IsNullOrEmpty(Timespan)) {
-                return;
-            }
-
-            polygonDataLoader.SetParameters(Ticker, Multiplier, Timespan, DateFrom.ToString("yyyy-MM-dd"), DateTo.ToString("yyyy-MM-dd"));
-            polygonStockPriceData = await polygonDataLoader.LoadPolygonStockDataAsync();
-
-            if (polygonStockPriceData != null) {
-                _symbol = polygonStockPriceData.Ticker;
-                _results = polygonStockPriceData.Results;
-            }
-        }
-
-        private async Task SaveToDatabase() {
-            if (_results == null || _results.Count == 0) {
-                return;
-            }
-            foreach (Result result in _results) {
-                DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(result.Timestamp);
-                string pxDate = offset.Date.ToShortDateString();
-                double openPx = result.Open;
-                double closePx = result.Close;
-                double highPx = result.High;
-                double lowPx = result.Low;
-                double volume = result.Volume;
-
-                try {
-                    await databaseHandler.AddPriceDataAsync(_symbol, pxDate, openPx, closePx, highPx, lowPx, volume);
-
-                    await databaseHandler.AddInstrumentDataAsync(_symbol);
-                } catch (Exception ex) {
-                    Console.WriteLine($"An error occurred while adding price data: {ex.Message}\n");
-                }
-            }
-        }
-
-        private async Task<TS> ReadFromDatabase(string ticker) {
+        // Methods for getting data from database
+        private async Task<TS> GetTSDataFromDatabase(string ticker) {
             List<PriceData> priceData = await databaseHandler.GetPriceDataAsync(ticker);
             int initialCapacity = priceData.Count;
             TS closePxTimeseries = new TS(initialCapacity);
@@ -252,5 +203,7 @@ namespace Frontend.Components.Controls {
             }
             return closePxTimeseries;
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Diagnostics.Metrics;
 
 namespace Frontend.Models.Database {
     public class DatabaseHandler {
@@ -87,6 +88,25 @@ namespace Frontend.Models.Database {
             return priceDataList;
         }
 
+        public async Task<List<string>> GetTickersBasedOfATickerAsync(string ticker) {
+            List<string> tickers = new List<string>();
+            using (SqlConnection connection = new SqlConnection(_connectionString)) {
+                await connection.OpenAsync();
+
+                string query = "SELECT InstrumentSymbol FROM Instruments " +
+                               "WHERE InstrumentType = (SELECT InstrumentType FROM Instruments " +
+                               "WHERE InstrumentSymbol = @ticker) AND InstrumentSymbol != @ticker";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ticker", ticker);
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        tickers.Add(reader.GetString(reader.GetOrdinal("InstrumentSymbol")));
+                    }
+                }
+            }
+            return tickers;
+        }
+
         public async Task AddPriceDataAsync(string symbol, string pxDate, double openPx, double closePx, double highPx, double lowPx, double volume) {
             int instrumentID = await GetInstrumentIDAsync(symbol);
 
@@ -108,6 +128,41 @@ namespace Frontend.Models.Database {
 
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
+
+        
+
+        public async Task<string> GetInstrumentTypeFromTickerAsync(string ticker) {
+            using (SqlConnection connection = new SqlConnection(_connectionString)) {
+                await connection.OpenAsync();
+
+                string query = "SELECT InstrumentType FROM Instruments WHERE InstrumentSymbol = @ticker";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@ticker", ticker);
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        return reader.GetString(reader.GetOrdinal("InstrumentType"));
+                    }
+                }
+            }
+            return "";
+        }
+
+        public async Task<List<string>> GetInstrumentNamesFromTypeAsync(string type) {
+            List<string> instrumentNames = new List<string>();
+            using (SqlConnection connection = new SqlConnection(_connectionString)) {
+                await connection.OpenAsync();
+
+                string query = "SELECT InstrumentName FROM Instruments WHERE InstrumentType = @type";
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@type", type);
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        instrumentNames.Add(reader.GetString(reader.GetOrdinal("InstrumentName")));
+                    }
+                }
+            }
+            return instrumentNames;
         }
 
         public async Task<Instrument> GetInstrumentDataAsync(string symbol) {
@@ -152,7 +207,7 @@ namespace Frontend.Models.Database {
             return symbol;
         }
 
-        public async Task<string> GetInstrumentByNameAsync(string? name) {
+        public async Task<string> GetTickerByNameAsync(string? name) {
             if (name == null) {
                 //Just a default market because I know that my database has some data for this market already
                 return "AAPL";
