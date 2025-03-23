@@ -81,10 +81,10 @@
         </div>
     </div>
 
-    @if (TimeseriesParam != null && TimeseriesParam.Size() > 0) {
+    @if (_timeseriesParam != null && _timeseriesParam.Size() > 0) {
         <Graph
-            Timeseries="@TimeseriesParam" 
-            IndicatorTS="@IndicatorTSParameter"
+            Timeseries="@_timeseriesParam" 
+            IndicatorTS="@_indicatorTSParameter"
             @rendermode="InteractiveServer" />
     }
     

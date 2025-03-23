@@ -159,6 +159,27 @@ namespace Frontend.Models.Timeseries {
             return (upperBandTs, lowerBandTs);
         }
 
+        public TS LinearRegression(List<TS> predictors) {
+            foreach (TS ts in predictors) {
+                if (!ts.GetTimestamps().SequenceEqual(_timestamps)) {
+                    return new TS();
+                }
+            }
+            Regression regression = new Regression();
+            TS regressionTs = CopyTs();
+
+            for (int i = 0; i < _timestamps.Count; i++) {
+                List<double> predictorValues = new List<double>();
+                foreach (TS ts in predictors) {
+                    predictorValues.Add(ts.GetValue(i));
+                }
+
+                regression.Update(double.NaN, _values[i], predictorValues);
+                regressionTs._values[i] = regression.GetCurrentPrediction();
+            }
+            return regressionTs;
+        }
+
         public override int GetHashCode() {
             return HashCode.Combine(GetTimestamps(), GetValues());
         }
