@@ -43,11 +43,6 @@ namespace Frontend.Components.Controls {
 
     public partial class GraphContainer {
         // Fields for displaying data on graph
-
-        // Maybe don't need this
-        //[Parameter]
-        //public string SelectedInstrument { get; set; } = "";
-
         [Parameter]
         public string SelectedSecurity { get; set; } = "";
         private string _currentSecurity = ""; 
@@ -148,7 +143,10 @@ namespace Frontend.Components.Controls {
 
                     List<TS> predictorsTS = new List<TS>();
                     foreach (string ticker in predictorsTickers) {
-                        predictorsTS.Add(await GetTSDataFromDatabase(ticker));
+                        // There is some data corruption with the SNAP stock
+                        if (ticker != "SNAP") {
+                            predictorsTS.Add(await GetTSDataFromDatabase(ticker));
+                        }
                     }
 
                     TS linregTs = closePxTs.LinearRegression(predictorsTS);

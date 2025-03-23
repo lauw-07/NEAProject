@@ -35,7 +35,7 @@ namespace Frontend.Models.Backtest
                 _instrument = instrument;
                 _strategy = new EwmaCrossoverStrategy(strategyParams);
             } else {
-                throw new InvalidOperationException($"Unsupport Strategy: {strategyType}");
+                throw new InvalidOperationException($"Unsupported Strategy: {strategyType}");
             }
         }
 

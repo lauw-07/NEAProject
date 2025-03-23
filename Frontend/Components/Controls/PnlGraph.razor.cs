@@ -137,7 +137,7 @@ namespace Frontend.Components.Controls
             return strategyParams;
         }
 
-        private Dictionary<string, object> GenerateBollingerBreakoutParams(Dictionary<string, string> rawParams) {
+        private Dictionary<string, object> GenerateBollingerParams(Dictionary<string, string> rawParams) {
             Dictionary<string, object> strategyParams = new();
 
             bool IsFixedValueExposure = false;
@@ -203,7 +203,7 @@ namespace Frontend.Components.Controls
             Type strategyType = typeof(BollingerReversionStrategy);
 
             StrategyParams strategyParams = new StrategyParams();
-            Dictionary<string, object> inputDict = GenerateBollingerBreakoutParams(Parameters);
+            Dictionary<string, object> inputDict = GenerateBollingerParams(Parameters);
             strategyParams.AddInputs(inputDict);
 
             backtestManager.SetStrategy(strategyType, strategyParams, instrument);
@@ -233,7 +233,7 @@ namespace Frontend.Components.Controls
             Type strategyType = typeof(BollingerBreakoutStrategy);
 
             StrategyParams strategyParams = new StrategyParams();
-            Dictionary<string, object> inputDict = GenerateBollingerBreakoutParams(Parameters);
+            Dictionary<string, object> inputDict = GenerateBollingerParams(Parameters);
             strategyParams.AddInputs(inputDict);
 
             backtestManager.SetStrategy(strategyType, strategyParams, instrument);

@@ -174,7 +174,7 @@ namespace Frontend.Models.Timeseries {
                     predictorValues.Add(ts.GetValue(i));
                 }
 
-                regression.Update(double.NaN, _values[i], predictorValues);
+                regression.Update(_values[i], predictorValues);
                 regressionTs._values[i] = regression.GetCurrentPrediction();
             }
             return regressionTs;

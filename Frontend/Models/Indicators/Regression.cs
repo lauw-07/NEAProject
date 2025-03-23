@@ -9,14 +9,11 @@ namespace Frontend.Models.Indicators {
 
         public Regression() { }
 
-        public override void Update(double dt, double targetValue, List<double> predictorValues) {
+        public override void Update(double targetValue, List<double> predictorValues) {
             _predictorList.Add(predictorValues);
             _targetList.Add(targetValue);
 
             if (_predictorList.Count > 1) {
-                //Matrix<double> predictors = Matrix<double>.Build.DenseOfRowArrays(_predictorList);
-                //Vector<double> target = Vector<double>.Build.Dense(_targetList.ToArray());
-
                 int numRows = _predictorList.Count;
                 int numCols = _predictorList[0].Count;
 

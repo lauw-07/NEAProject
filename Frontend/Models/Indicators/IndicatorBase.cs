@@ -3,6 +3,7 @@
 namespace Frontend.Models.Indicators {
     public abstract class IndicatorBase {
         protected string _name;
+
         public IndicatorBase() {
             _name = "";
         }
@@ -27,7 +28,7 @@ namespace Frontend.Models.Indicators {
             throw new NotImplementedException();
         }
 
-        public virtual void Update(double dt, double value, List<double> inputs) {
+        public virtual void Update(double value, List<double> inputs) {
             throw new NotImplementedException();
         }
     }
