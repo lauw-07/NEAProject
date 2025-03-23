@@ -1,5 +1,6 @@
 ﻿using Frontend.Models.Backtest.Breakout;
 using Frontend.Models.Backtest.Crossover;
+using Frontend.Models.Backtest.Reversion;
 using Frontend.Models.Timeseries;
 using Instrument = Frontend.Models.Database.Instrument;
 
@@ -30,6 +31,9 @@ namespace Frontend.Models.Backtest
                 // e.g. EwmaCrossoverStrategy
                 _instrument = instrument;
                 _strategy = new EwmaCrossoverStrategy(strategyParams);
+            } else if (typeof(ReversionStrategy).IsAssignableFrom(strategyType)) {
+                _instrument = instrument;
+                _strategy = new ReversionStrategy(strategyParams);
             }
         }
 

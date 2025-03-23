@@ -7,7 +7,7 @@ namespace Frontend.Components.Controls {
         };
 
         private List<string> _extraStrats = new List<string>() {
-            "Bollinger Bands Reversion"
+            "Mean Reversion"
         };
 
         private void SelectStrategy(string strategy) {

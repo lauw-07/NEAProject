@@ -26,22 +26,22 @@ namespace Frontend.Models.Backtest.Breakout
         // State of _signal + target Pos at a timestamp
         // Last price + Last timestamp
 
-        private DateTime _firstTimestamp = DateTime.MaxValue;
-        private DateTime? _lastTimestamp = null;
-        private double _lastPrice = double.NaN;
-        private double _signal = 0;
-        private double _targetPosition = 0;
+        protected DateTime _firstTimestamp = DateTime.MaxValue;
+        protected DateTime? _lastTimestamp = null;
+        protected double _lastPrice = double.NaN;
+        protected double _signal = 0;
+        protected double _targetPosition = 0;
 
-        private BollingerBands _bollingerBands;
-        private double _upperBound = double.NaN;
-        private double _lowerBound = double.NaN;
-        private int _windowSize = 0;
+        protected BollingerBands _bollingerBands;
+        protected double _upperBound = double.NaN;
+        protected double _lowerBound = double.NaN;
+        protected int _windowSize = 0;
 
 
-        private BollingerBreakoutForecastStates _state = BollingerBreakoutForecastStates.Idle;
-        private ExposureManager _exposureManager;
-        private Type _exitManagerClass;
-        private BollingerExitManager _exitManager;
+        protected BollingerBreakoutForecastStates _state = BollingerBreakoutForecastStates.Idle;
+        protected ExposureManager _exposureManager;
+        protected Type _exitManagerClass;
+        protected BollingerExitManager _exitManager;
 
         public BollingerBreakoutStrategy(StrategyParams strategyParams) : base(strategyParams) {
             // assume input dictionary has a key for the closePrices
@@ -107,7 +107,7 @@ namespace Frontend.Models.Backtest.Breakout
             }
         }
 
-        private double GetExitRef(BollingerBreakoutForecastStates state, double closePx) {
+        protected double GetExitRef(BollingerBreakoutForecastStates state, double closePx) {
             double exitLevel = double.NaN;
             if (typeof(BollingerExitWithTrailingStop).IsAssignableFrom(_exitManagerClass)) {
                 exitLevel = _exitManager.GetExitLevel(state, closePx);

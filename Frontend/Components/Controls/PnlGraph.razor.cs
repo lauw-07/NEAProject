@@ -1,7 +1,9 @@
 ﻿using Frontend.Models.Backtest;
 using Frontend.Models.Backtest.Breakout;
 using Frontend.Models.Backtest.Crossover;
+using Frontend.Models.Backtest.Reversion;
 using Frontend.Models.Database;
+using Instrument = Frontend.Models.Database.Instrument;
 using Frontend.Models.Timeseries;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -47,6 +49,9 @@ namespace Frontend.Components.Controls
                     break;
                 case "EWMA Crossover":
                     GenerateEwmaCrossoverPnl(instrument, timeseries, backtestManager);
+                    break;
+                case "Mean Reversion":
+                    GenerateMeanReversionPnl(instrument, timeseries, backtestManager);
                     break;
                 default:
                     break;
@@ -191,6 +196,36 @@ namespace Frontend.Components.Controls
             }
             return strategyParams;
         }
+
+        private void GenerateMeanReversionPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
+            TS closePxTs = timeseries[1];
+
+            Type strategyType = typeof(ReversionStrategy);
+
+            StrategyParams strategyParams = new StrategyParams();
+            Dictionary<string, object> inputDict = GenerateBollingerBreakoutParams(Parameters);
+            strategyParams.AddInputs(inputDict);
+
+            backtestManager.SetStrategy(strategyType, strategyParams, instrument);
+
+            List<StrategyInput> strategyInputs = new List<StrategyInput>();
+            for (int i = 0; i < closePxTs.Size(); i++) {
+                StrategyInput strategyInput = new StrategyInput();
+                strategyInput.AddInput("ClosePrice", closePxTs.GetValue(i));
+                strategyInput.AddInput("Timestamp", closePxTs.GetTimestamp(i));
+                strategyInputs.Add(strategyInput);
+            }
+
+            TS pnlTs = backtestManager.RunBacktest(strategyInputs);
+
+            (TS, TS) bollingerBands = closePxTs.BollingerBands((int)inputDict["WindowSize"], (double)inputDict["Width"]);
+            List<TS> indicatorTs = new List<TS>() { bollingerBands.Item1, bollingerBands.Item2 };
+
+            AddToDataset(closePxTs, "Close Prices");
+            AddToDataset(pnlTs, "P&L");
+            AddToDataset(indicatorTs, "Bollinger Bands");
+        }
+
 
         private void GenerateBollingerBreakoutPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
             TS closePxTs = timeseries[1];

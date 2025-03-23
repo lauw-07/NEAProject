@@ -110,8 +110,8 @@ namespace Frontend.Models.Database {
             }
         }
 
-        public async Task<List<Instrument>> GetInstrumentDataAsync(string symbol) {
-            List<Instrument> instruments = new List<Instrument>();
+        public async Task<Instrument> GetInstrumentDataAsync(string symbol) {
+            Instrument instrument = new Instrument(0, "", "", "", "");
 
             using (SqlConnection connection = new SqlConnection(_connectionString)) {
                 await connection.OpenAsync();
@@ -121,18 +121,17 @@ namespace Frontend.Models.Database {
                 cmd.Parameters.AddWithValue("@symbol", symbol);
                 using (SqlDataReader reader = await cmd.ExecuteReaderAsync()) {
                     while (await reader.ReadAsync()) {
-                        var instrument = new Instrument(
+                        instrument = new Instrument(
                             reader.GetInt32(reader.GetOrdinal("InstrumentID")),
                             reader.GetString(reader.GetOrdinal("InstrumentName")),
                             reader.GetString(reader.GetOrdinal("InstrumentSymbol")),
                             reader.GetString(reader.GetOrdinal("InstrumentType")),
                             reader.GetString(reader.GetOrdinal("InstrumentCurrency"))
                         );
-                        instruments.Add(instrument);
                     }
                 }
             }
-            return instruments;
+            return instrument;
         }
 
         public async Task<string> GetInstrumentByIDAsync(int id) {

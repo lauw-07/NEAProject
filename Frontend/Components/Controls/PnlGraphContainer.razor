@@ -15,7 +15,7 @@
     </div>
 
     <div class="guidance">
-        @if (Strategy == "Bollinger Bands Breakout") {
+        @if ((Strategy == "Bollinger Bands Breakout") || (Strategy == "Mean Reversion")) {
             <p>
                 Ticker: This is essentially the stock whose price data you want to apply this strategy to <br /><br />
                 Window Size: This specifies the size of the rolling window in the Bollinger Bands indicator.

@@ -57,6 +57,8 @@ namespace Frontend.Components.Controls {
                     return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type" };
                 case "EWMA Crossover":
                     return new List<string>() { "Ticker", "Slow Half Life", "Fast Half Life", "Exposure Type", "Exposure" };
+                case "Mean Reversion":
+                    return new List<string>() { "Ticker", "Window Size", "Width", "Exposure Type", "Exposure", "Exit Type" };
                 default:
                     return new List<string>();
             }
