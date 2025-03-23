@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Frontend.Client\Frontend.Client.csproj" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.8" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Syncfusion.Blazor" Version="27.2.5" />

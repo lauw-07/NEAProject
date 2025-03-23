@@ -23,7 +23,10 @@ namespace Frontend.Models.Backtest
         public BacktestManager() { }
 
         public void SetStrategy(Type strategyType, StrategyParams strategyParams, Instrument instrument) {
-            if (typeof(BollingerBreakoutStrategy).IsAssignableFrom(strategyType)) {
+            if (typeof(BollingerReversionStrategy).IsAssignableFrom(strategyType)) {
+                _instrument = instrument;
+                _strategy = new BollingerReversionStrategy(strategyParams);
+            } else if (typeof(BollingerBreakoutStrategy).IsAssignableFrom(strategyType)) {
                 // e.g. BollingerBreakoutStrategy
                 _instrument = instrument;
                 _strategy = new BollingerBreakoutStrategy(strategyParams);
@@ -31,9 +34,8 @@ namespace Frontend.Models.Backtest
                 // e.g. EwmaCrossoverStrategy
                 _instrument = instrument;
                 _strategy = new EwmaCrossoverStrategy(strategyParams);
-            } else if (typeof(ReversionStrategy).IsAssignableFrom(strategyType)) {
-                _instrument = instrument;
-                _strategy = new ReversionStrategy(strategyParams);
+            } else {
+                throw new InvalidOperationException($"Unsupport Strategy: {strategyType}");
             }
         }
 

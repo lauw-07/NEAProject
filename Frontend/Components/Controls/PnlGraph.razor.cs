@@ -200,7 +200,7 @@ namespace Frontend.Components.Controls
         private void GenerateMeanReversionPnl(Instrument instrument, List<TS> timeseries, BacktestManager backtestManager) {
             TS closePxTs = timeseries[1];
 
-            Type strategyType = typeof(ReversionStrategy);
+            Type strategyType = typeof(BollingerReversionStrategy);
 
             StrategyParams strategyParams = new StrategyParams();
             Dictionary<string, object> inputDict = GenerateBollingerBreakoutParams(Parameters);

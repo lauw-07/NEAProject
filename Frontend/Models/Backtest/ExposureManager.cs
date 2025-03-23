@@ -34,7 +34,7 @@ namespace Frontend.Models.Backtest
     {
         public FixedValueExposureManager(StrategyParams exposureParams) : base()
         {
-            exposure = (double)exposureParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureFixedValue.ToString()];
+            exposure = (double)exposureParams.GetInputs()[BollingerStrategyFields.ExposureFixedValue.ToString()];
             numShares = double.NaN;
         }
 
@@ -60,7 +60,7 @@ namespace Frontend.Models.Backtest
     {
         public FixedShareExposureManager(StrategyParams exposureParams) : base()
         {
-            numShares = (double)exposureParams.GetInputs()[BollingerBreakoutStrategyFields.ExposureFixedShare.ToString()];
+            numShares = (double)exposureParams.GetInputs()[BollingerStrategyFields.ExposureFixedShare.ToString()];
             exposure = double.NaN;
         }
 

@@ -26,5 +26,9 @@ namespace Frontend.Models.Indicators {
         public virtual void Update(TS values) {
             throw new NotImplementedException();
         }
+
+        public virtual void Update(double dt, double value, List<double> inputs) {
+            throw new NotImplementedException();
+        }
     }
 }
