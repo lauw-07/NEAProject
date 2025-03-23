@@ -10,21 +10,9 @@ namespace Frontend.Components.Controls {
         private List<string> _availableSecurities = new List<string>();
         //Using strings here just temporarily to make it easy to test
 
-        //[Parameter]
-        //public EventCallback<string> SelectInstrumentCallback { get; set; }
-
         [Parameter]
         public EventCallback<string> SelectSecurityCallback { get; set; }
-
-        //private string? _instrumentSelected;
         private List<List<string>> _summaryData = new();
-
-        //private async Task SelectInstrument(string instrument) {
-        //    Console.WriteLine($"Selected Instrument: {instrument}");
-        //    _instrumentSelected = instrument;
-        //    await GetAvailableSecurities(instrument);
-        //    await SelectInstrumentCallback.InvokeAsync(instrument);
-        //}
 
         private void SelectSecurity(string security) {
             Console.WriteLine($"Selected Security: {security}");
