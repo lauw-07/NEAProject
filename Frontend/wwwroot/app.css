@@ -237,3 +237,14 @@ html, body {
     font-size: 14px;
     color: #000000;
 }
+
+.help-container h1{
+    padding-bottom: 15px;
+    padding-top: 15px;
+    font-size: 20px;
+}
+
+.help-container p{
+    padding-bottom: 5px;
+    font-size: 15px;
+}

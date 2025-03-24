@@ -26,5 +26,9 @@ namespace Frontend.Components.Controls {
         private async Task GetSummaryData() {
             _summaryData = await databaseHandler.GetPriceDataSummary();
         }
+
+        private void GoToHelp() {
+            navigationManager.NavigateTo($"/Help");
+        }
     }
 }
