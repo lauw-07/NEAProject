@@ -10,11 +10,11 @@ namespace Frontend.Components.Controls {
          */
 
         private List<string> _popularTradingIndicators = new List<string>() {
-            "Exponentially Weighted Moving Average", "Bollinger Bands", "Simple Moving Average", "Exponential Weighted Volatility"
+            "Exponentially Weighted Moving Average", "Bollinger Bands", "Simple Moving Average", 
         };
 
         private List<string> _extraTradingIndicators = new List<string>() {
-            "Linear Regression", "Standard Deviation", "RSI", "Aroon"
+            "Exponential Weighted Volatility", "Linear Regression"
         };
 
         [Parameter]
