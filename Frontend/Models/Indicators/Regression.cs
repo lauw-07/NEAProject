@@ -6,14 +6,23 @@ namespace Frontend.Models.Indicators {
         private List<List<double>> _predictorList = new();
         private List<double> _targetList = new();
         private double _currentPrediction = double.NaN;
+        private int _numPredictors = 0;
 
         public Regression() { }
 
         public override void Update(double targetValue, List<double> predictorValues) {
+            if (predictorValues.Count < 1) {
+                return;
+            } else if (_predictorList.Count < 1) {
+                _numPredictors = predictorValues.Count;
+            } else if (predictorValues.Count != _numPredictors) {
+                return;
+            }
+
             _predictorList.Add(predictorValues);
             _targetList.Add(targetValue);
 
-            if (_predictorList.Count > 1) {
+            if (_predictorList.Count > _numPredictors) {
                 int numRows = _predictorList.Count;
                 int numCols = _predictorList[0].Count;
 

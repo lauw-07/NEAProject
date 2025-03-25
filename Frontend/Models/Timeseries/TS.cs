@@ -166,7 +166,7 @@ namespace Frontend.Models.Timeseries {
                 }
             }
             Regression regression = new Regression();
-            TS regressionTs = CopyTs();
+            TS regressionTs = new TS();
 
             for (int i = 0; i < _timestamps.Count; i++) {
                 List<double> predictorValues = new List<double>();
@@ -175,7 +175,10 @@ namespace Frontend.Models.Timeseries {
                 }
 
                 regression.Update(_values[i], predictorValues);
-                regressionTs._values[i] = regression.GetCurrentPrediction();
+                double prediction = regression.GetCurrentPrediction();
+                if (!double.IsNaN(prediction)) {
+                    regressionTs.Add(_timestamps[i], prediction);
+                }
             }
             return regressionTs;
         }

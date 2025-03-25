@@ -141,7 +141,7 @@
 
 .details-header, .details-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 2fr;
     gap: 10px;
     padding: 5px 5px;
 }
