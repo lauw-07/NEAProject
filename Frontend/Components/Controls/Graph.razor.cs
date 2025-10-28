@@ -16,7 +16,7 @@ namespace Frontend.Components.Controls {
             if (Timeseries != null && Timeseries.Size() > 0) {
                 AddToDataset(Timeseries);
             } else {
-                Console.WriteLine("Timeseries data is null");
+                Console.WriteLine("Timeseries data is null ");
             }
 
             if (IndicatorTS != null && IndicatorTS.Count > 0) {
